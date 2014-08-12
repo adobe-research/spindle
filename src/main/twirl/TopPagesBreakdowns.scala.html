@@ -1,0 +1,109 @@
+@import java.text.NumberFormat
+@import java.util.Locale
+@(queryName: String, daysInRange: Seq[String],
+  results: Seq[(String, Int, Seq[(String,Int)])])
+<!-- Reference: http://bl.ocks.org/Caged/6476579 -->
+
+@base {
+  <link rel="stylesheet" type="text/css" href="daterangepicker-bs3.css" />
+} {
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script type="text/javascript" src="moment.js"></script>
+  <script type="text/javascript" src="daterangepicker.js"></script>
+
+  <div class="container">
+    <div class="hero-unit">
+      <h1>@(queryName)</h1>
+      <a href="/query?name=@(queryName)&profile=true&start_ymd=@(daysInRange(0))&finish_ymd=@(daysInRange(daysInRange.size-1))">
+        Run again and profile.
+      </a>
+    <form class="form-horizontal">
+        <fieldset>
+        <div class="control-group">
+          <div class="controls">
+            <div class="input-prepend input-group">
+              <span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span><input type="text" style="width: 200px" name="dateRange" id="dateRange" class="form-control" value="@(daysInRange(0)) - @(daysInRange(daysInRange.size-1))" />
+            </div>
+          </div>
+        </div>
+        </fieldset>
+      </form>
+      <div id="barChart"></div>
+      @for((result,idx)<-results.zipWithIndex) {
+        <h2>@(result._1)</h2>
+        Total Pageviews:
+        @(NumberFormat.getNumberInstance(Locale.US).format(result._2))
+        <div class="container-fluid"><div class="row">
+          <div class="col-xs-6">
+            <center><div id="pie_@(idx)"></div></center>
+          </div>
+          <div class="col-xs-6">
+            <table class="table table-striped table-hover">
+              @for(browserResult<-result._3) {
+                <tr>
+                  <td>@(browserResult._1)</td>
+                  <td>@(browserResult._2)</td>
+                </tr>
+              }
+            </table>
+          </div>
+          <script type="text/javascript">
+function drawPie@(idx)() {
+  var data = google.visualization.arrayToDataTable([
+      ['Browser', 'Results'],
+      @for(browserResult<-result._3) {
+        ["@(browserResult._1)", @(browserResult._2)],
+      }
+  ]);
+
+  var opts = {pieHole: 0.2};
+  var chart = new google.visualization.PieChart(
+    document.getElementById('pie_@(idx)')
+  );
+  chart.draw(data, opts);
+}
+          </script>
+        </div></div>
+      }
+    </div>
+  </div>
+  <script type="text/javascript">
+google.load("visualization", "1", {packages:["corechart"]});
+google.setOnLoadCallback(drawCharts);
+function drawCharts() {
+  @for((result,idx)<-results.zipWithIndex) {
+    drawPie@(idx)();
+  }
+  drawBars();
+}
+function drawBars() {
+  var data = google.visualization.arrayToDataTable([
+      ["Page", "Pageviews"],
+      @for(result<-results) {
+        ["@(result._1)", @(result._2)],
+      }
+  ]);
+  var options = {
+    vAxis: {title: 'Views'}
+  };
+
+  var chart = new google.visualization.BarChart(
+    document.getElementById('barChart')
+  );
+  chart.draw(data, options);
+}
+$(function() {
+  $("#dateRange").daterangepicker({
+      format: 'YYYY-MM-DD',
+      startDate: '@(daysInRange(0))',
+      endDate: '@(daysInRange(daysInRange.size-1))'
+    },
+    function(start, end, label) {
+      window.location.href = "/query?name=@(queryName)&start_ymd="
+        + start.format("YYYY-MM-DD") + "&finish_ymd=" + end.format("YYYY-MM-DD")
+    }
+  );
+})
+  </script>
+}
+

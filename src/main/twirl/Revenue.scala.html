@@ -1,0 +1,76 @@
+@import java.text.NumberFormat
+@import java.util.Locale
+@(queryName: String, dayResults: Seq[(String, Double)])
+<!-- Reference: http://bl.ocks.org/Caged/6476579 -->
+
+@base {
+  <link rel="stylesheet" type="text/css" href="daterangepicker-bs3.css" />
+} {
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script type="text/javascript" src="moment.js"></script>
+  <script type="text/javascript" src="daterangepicker.js"></script>
+
+  <div class="container">
+    <div class="hero-unit">
+      <h1>@(queryName)</h1>
+      <a href="/query?name=@(queryName)&profile=true&start_ymd=@(dayResults(0)._1)&finish_ymd=@(dayResults(dayResults.size-1)._1)">
+        Run again and profile.
+      </a>
+    <form class="form-horizontal">
+        <fieldset>
+        <div class="control-group">
+          <div class="controls">
+            <div class="input-prepend input-group">
+              <span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span><input type="text" style="width: 200px" name="dateRange" id="dateRange" class="form-control" value="@(dayResults(0)._1) - @(dayResults(dayResults.size-1)._1)" />
+            </div>
+          </div>
+        </div>
+        </fieldset>
+      </form>
+      <div id="barChart"></div>
+      <table class="table table-striped table-hover">
+        @for(dayResult<-dayResults) {
+          <tr>
+            <td>@(dayResult._1)</td>
+            <td>
+              @(NumberFormat.getCurrencyInstance(Locale.US).format(dayResult._2))
+            </td>
+          </tr>
+        }
+      </table>
+    </div>
+  </div>
+  <script>
+google.load("visualization", "1", {packages:["corechart"]});
+google.setOnLoadCallback(drawCharts);
+function drawCharts() {
+  var data = google.visualization.arrayToDataTable([
+      ["Day", "Revenue"],
+      @for(dayResult<-dayResults) {
+        ["@(dayResult._1)", @(dayResult._2)],
+      }
+  ]);
+  var options = {
+    vAxis: {title: 'Date'}
+  };
+
+  var chart = new google.visualization.BarChart(
+    document.getElementById('barChart')
+  );
+  chart.draw(data, options);
+}
+$(function() {
+  $("#dateRange").daterangepicker({
+      format: 'YYYY-MM-DD',
+      startDate: '@(dayResults(0)._1)',
+      endDate: '@(dayResults(dayResults.size-1)._1)'
+    },
+    function(start, end, label) {
+      window.location.href = "/query?name=@(queryName)&start_ymd="
+        + start.format("YYYY-MM-DD") + "&finish_ymd=" + end.format("YYYY-MM-DD")
+    }
+  );
+})
+  </script>
+}
+

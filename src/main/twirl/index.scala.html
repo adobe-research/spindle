@@ -1,0 +1,14 @@
+@(queries: Seq[String])
+
+@base { } {
+  <div class="container">
+    <div class="hero-unit">
+      <h1>Queries.</h1>
+      <ul>
+        @for(query<-queries) {
+          <li><a href="/query?name=@(query)&start_ymd=2014-01-01&finish_ymd=2014-01-07">@(query)</a></li>
+        }
+      </ul>
+    </div>
+  </div>
+}
