@@ -42,6 +42,8 @@ using Parquet with Avro.
 is a complete [Scala][scala]/[sbt][sbt] project
 using Thrift for data serialization and shows how to only load the
 specified columnar subset.
+For a more detailed introduction to Thrift,
+see [Thrift: The Missing Guide][thrift-guide].
 
 The entire Adobe Analytics schema cannot be published,
 but [AnalyticsData.thrift][AnalyticsData.thrift] provides
@@ -195,18 +197,17 @@ All other portions are copyright 2014 Adobe Systems Incorporated
 under the Apache 2 license, and a copy is provided in `LICENSE`.
 
 [adobe-analytics]: http://www.adobe.com/solutions/digital-analytics.html
+
 [mapreduce]: http://wiki.apache.org/hadoop/MapReduce
 [drill]: http://incubator.apache.org/drill/
 [impala]: http://www.cloudera.com/content/cloudera/en/products-and-services/cdh/impala.html
-
 [spark]: http://spark.apache.org/
+
 [parquet]: http://parquet.io/
 [thrift]: https://thrift.apache.org/
+[avro]: http://avro.apache.org/
 [hdfs]: http://hadoop.apache.org/
 [thrift-guide]: http://diwakergupta.github.io/thrift-missing-guide/
-[avro]: http://avro.apache.org/
-[parquet-cascading]: https://github.com/Parquet/parquet-mr/blob/master/parquet_cascading.md
-[parquet-format]: https://github.com/apache/incubator-parquet-format
 
 [grunt]: http://gruntjs.com/
 [ghp]: https://pages.github.com/
@@ -220,6 +221,13 @@ under the Apache 2 license, and a copy is provided in `LICENSE`.
 [sbt-thrift]: https://github.com/bigtoast/sbt-thrift
 [sbt-assembly]: https://github.com/sbt/sbt-assembly
 
-[AnalyticsData.thrift]: https://git.corp.adobe.com/amos/spindle/blob/master/src/main/thrift/AnalyticsData.thrift
-[spark-parquet-thrift-example]: https://github.com/adobe-research/spark-parquet-thrift-example
 [pjson]: https://git.corp.adobe.com/amos/spindle/blob/master/package.json
+[AnalyticsData.thrift]: https://git.corp.adobe.com/amos/spindle/blob/master/src/main/thrift/AnalyticsData.thrift
+
+[spark-parquet-thrift-example]: https://github.com/adobe-research/spark-parquet-thrift-example
+[spark-cluster-deployment]: https://github.com/adobe-research/spark-cluster-deployment
+
+[demo]: http://adobe-research.github.io/spindle/
+[bootstrap]: http://getbootstrap.com/
+[terminus]: https://github.com/rlamana/Terminus
+[beamer-snippets]: https://github.com/bamos/beamer-snippets
