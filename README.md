@@ -23,7 +23,7 @@ is not running Spindle in real-time.
 
 ![](https://git.corp.adobe.com/amos/spindle/raw/master/images/top-pages-by-browser.png)
 
-![](https://git.corp.adobe.com/amos/spindle/raw/master/images/ad-hoc.png)
+![](https://git.corp.adobe.com/amos/spindle/raw/master/images/adhoc.png)
 
 [Grunt][grunt] is used to deploy `demo` to [Github pages][ghp]
 in the [gh-pages][ghp] branch with the [grunt-build-control][gbc] plugin.
