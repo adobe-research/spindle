@@ -22,7 +22,6 @@ Unfortunately, the demo is only meant for illustrative purposes and
 is not running Spindle in real-time.
 
 ![](https://git.corp.adobe.com/amos/spindle/raw/master/images/top-pages-by-browser.png)
-
 ![](https://git.corp.adobe.com/amos/spindle/raw/master/images/adhoc.png)
 
 [Grunt][grunt] is used to deploy `demo` to [Github pages][ghp]
@@ -108,12 +107,22 @@ for more information on running this application.
 | Page B | Safari | http://google.com | 333 | 333 | 1 | 1408187386 | | | http://facebook.com
 | Page C | Safari | http://google.com | 333 | 333 | 1 | 1408187388 | | | http://facebook.com
 
-# Configuration
+# Queries.
 TODO
+
+# Deploying to a Spark and HDFS Cluster.
+| ![](https://github.com/adobe-research/spark-cluster-deployment/raw/master/images/initial-deployment-2.png) | ![](https://github.com/adobe-research/spark-cluster-deployment/raw/master/images/application-deployment-1.png) |
+|---|---|
+
+We have released
+[adobe-research/spark-cluster-deployment][spark-cluster-deployment]
+to simplify Spark cluster installation and application deployment.
+Please refer to this project to learn how we deploy Spindle.
 
 # Building
 
-This is developed on CentOS 6.5 with
+Ensure you have the following software on the server.
+Spindle has been developed on CentOS 6.5 with
 sbt 0.13.5, Spark 1.0.0, Hadoop 2.0.0-cdh4.7.0,
 and parquet-thrift 1.5.0.
 
@@ -125,23 +134,17 @@ and parquet-thrift 1.5.0.
 | `hadoop version` | Hadoop 2.0.0-cdh4.7.0 |
 | `cat /usr/lib/spark/RELEASE` | Spark 1.0.0 built for Hadoop 2.0.0-cdh4.7.0 |
 
-## Testing Thrift Schema
-TODO
-
-## Fat JAR
-
-```Bash
-thrift --gen java AnalyticsData.thrift
-```
-
-
-TODO
-
-# Deploying
-TODO
+Spindle uses [sbt][sbt] and the [sbt-assembly][sbt-assembly] plugin
+to build Spark into a fat JAR to be deployed to the Spark cluster.
+Using [adobe-research/spark-cluster-deployment][spark-cluster-deployment],
+modify `config.yaml` to have your server configurations,
+and build the application with `ss-a`, send the JAR to your cluster
+with `ss-sy`, and start Spindle with `ss-st`.
 
 # Benchmarking
 TODO
+
+![](https://git.corp.adobe.com/amos/spindle/raw/master/images/caching.png)
 
 # License
 Bundled applications are copyright their respective owners.
