@@ -30,10 +30,13 @@ The [npm][npm] dependencies are managed in [package.json][pjson]
 and can be installed with `npm install`.
 
 # Data Format
-Adobe Analytics events data have 250 columns, and
-most queries use less than 7 columns.
+Adobe Analytics events data have at least 250 columns,
+and sometimes significantly more than 250 columns.
+Most queries use less than 7 columns, and loading all of the
+columns into memory to only use 7 is inefficient.
 Spindle stores event data in the [Parquet][parquet] columnar store
-on the [Hadoop Distributed File System][hdfs] (HDFS).
+on the [Hadoop Distributed File System][hdfs] (HDFS)
+to only load the subsets of columns each query requires.
 
 Parquet can be used with [Avro][avro] or [Thrift][thrift] schemas.
 [Matt Massie's article][spark-parquet-avro] provides an example of
