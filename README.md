@@ -22,6 +22,7 @@ Unfortunately, the demo is only meant for illustrative purposes and
 is not running Spindle in real-time.
 
 ![](https://git.corp.adobe.com/amos/spindle/raw/master/images/top-pages-by-browser.png)
+
 ![](https://git.corp.adobe.com/amos/spindle/raw/master/images/ad-hoc.png)
 
 [Grunt][grunt] is used to deploy `demo` to [Github pages][ghp]
