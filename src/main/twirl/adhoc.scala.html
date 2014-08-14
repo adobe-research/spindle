@@ -1,0 +1,137 @@
+@*
+Copyright (c) 2014 Adobe Systems Incorporated. All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*@
+
+@import java.text.NumberFormat
+@import java.util.Locale
+@(daysInRange: Seq[String])
+
+@base {
+  <link href='http://fonts.googleapis.com/css?family=Ubuntu+Mono' rel='stylesheet' type='text/css' />
+  <link href='http://fonts.googleapis.com/css?family=Arvo:400,400italic,700,700italic' rel='stylesheet' type='text/css' />
+  <link href='terminus.css' rel='stylesheet' type='text/css' />
+  <link rel="stylesheet" type="text/css" href="daterangepicker-bs3.css" />
+  <style type="text/css">
+    html {
+      height: 100%;
+    }
+
+    #terminal {
+      font-family: 'Ubuntu Mono', monospace;
+      font-weight: 400;
+      color: #ddd;
+
+      height: 100%;
+    }
+
+    #terminal .identity {
+      font-family: 'Arvo', serif;
+      font-style: italic;
+    }
+
+    #terminal .identity img {
+      display: inline-block;
+    }
+
+    #terminal .identity h1 {
+      display: inline-block;
+
+      font-size: 40px;
+      padding-left: 12px;
+    }
+  </style>
+} {
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script type="text/javascript" src="moment.js"></script>
+  <script type="text/javascript" src="daterangepicker.js"></script>
+  <div class="container">
+    <div class="hero-unit">
+      <h1>Ad Hoc Queries.</h1>
+      <form class="form-inline">
+        <div class="form-group">
+          <fieldset>
+            <div class="control-group">
+              <div class="controls">
+                <div class="input-prepend input-group">
+                  <span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span><input type="text" style="width: 200px" name="dateRange" id="dateRange" class="form-control" value="@(daysInRange(0)) - @(daysInRange(daysInRange.size-1))" />
+                </div>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+        <div class="form-group">
+          <label class="form-group">Number of Output Results</label>
+          <input type="number" class="form-control" id="numResults"
+            style="width: 100px" value="3">
+        </div>
+      </form>
+      <br>
+      The command line interface below demonstrates Spark SQL on
+      the analytics data set.
+      View the possible columns with the <code>columns</code> command
+      and run a sql query with the <code>sql</code> command.
+      The data for the dates specified is loaded into tables
+      <code>data_@(daysInRange(0).replace("-","_"))</code> through
+      <code>data_@(daysInRange(daysInRange.size-1).replace("-","_"))</code>,
+      and all the data is unioned into a table named <code>all_data</code>.
+      For example, <code>sql select count(*) from all_data</code> will
+      output the total number of events through the specified date range.
+      <br>
+      <div id="terminal"></div>
+      <script type="text/javascript" src="terminus.js"></script>
+
+      <script type="text/javascript">
+$(function() {
+  var Commands = {
+    sql: function() {
+      var sqlQuery = Array.prototype.slice.call(arguments, 0).join('%20')
+        .replace("=",".EQ.").replace(">",".GT.").replace("<",".LT.");
+      var term = this
+      jQuery.ajax({
+        url: '/adhoc-sql?sqlQuery=' + sqlQuery +
+        '&start_ymd=@(daysInRange(0))&finish_ymd=@(daysInRange(daysInRange.size-1))&numResults=' + $("#numResults").val(),
+        success: function (result) { term.write(result); },
+        async: false
+      });
+      term.exit(0);
+    },
+    columns: function() {
+      this.write("col1, col2, col3, col4");
+      this.exit(0);
+    }
+  }
+
+  var terminus = new Terminus('#terminal', {
+    welcome: "Press <span style='color:grey'>&lt;tab&gt;</span> "+
+      "to see a list of available commands."
+  });
+
+  terminus.shell.include([Commands]);
+
+  $("#dateRange").daterangepicker({
+      format: 'YYYY-MM-DD',
+      startDate: '@(daysInRange(0))',
+      endDate: '@(daysInRange(daysInRange.size-1))'
+    },
+    function(start, end, label) {
+      window.location.href = "/adhoc?start_ymd="
+        + start.format("YYYY-MM-DD") + "&finish_ymd=" + end.format("YYYY-MM-DD")
+    }
+  );
+});
+      </script>
+    </div>
+  </div>
+}
