@@ -84,7 +84,6 @@ modeled after
 See [adobe-research/spark-parquet-thrift-example][spark-parquet-thrift-example]
 for more information on running this application.
 
-
 ### hdfs://hdfs_server_address:8020/spindle-sample-data/2014-08-14
 | post_pagename | user_agent | visit_referrer | post_visid_high | post_visid_low | visit_num | hit_time_gmt | post_purchaseid | post_product_list | first_hit_referrer |
 |---|---|---|---|---|---|---|---|---|---|
@@ -118,7 +117,32 @@ for more information on running this application.
 | Page C | Safari | http://google.com | 333 | 333 | 1 | 1408187388 | | | http://facebook.com
 
 # Queries.
-TODO
+Spindle includes eight reference queries which are
+open to further optimizations.
+
++ *Q0* (**Pageviews**)
+  is a breakdown of the number of pages viewed
+  each day in the specified range.
++ *Q1* (**Revenue**) is the overall revenue for each day in
+  the specified range.
++ *Q2* (**RevenueFromTopReferringDomains**) obtains the top referring
+  domains for each visit and breaks down the revenue by day.
+  The visit\_referrer field is preprocessed into each record in
+  the raw data.
++ *Q3* (**RevenueFromTopReferringDomainsFirstVisitGoogle**) is
+  the same as RevenueFromTopReferringDomains, but with the
+  visitor's absolute first referrer from Google.
+  The first\_hit\_referrer field is preprocessed into each record in
+  the raw data.
++ *Q4* (**TopPages**) is a breakdown of the top pages for the
+  entire date range, not per day.
++ *Q5* (**TopPagesByBrowser**) is a breakdown of the browsers
+  used for TopPages.
++ *Q6* (**TopPagesByPreviousTopPages**) breaks down the top previous
+  pages a visitor was at for TopPages.
++ *Q7* (**TopReferringDomains**) is the top referring domains for
+  the entire date range, not per day.
+
 
 # Deploying to a Spark and HDFS Cluster.
 | ![](https://github.com/adobe-research/spark-cluster-deployment/raw/master/images/initial-deployment-2.png) | ![](https://github.com/adobe-research/spark-cluster-deployment/raw/master/images/application-deployment-1.png) |
