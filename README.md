@@ -21,7 +21,9 @@ statically [here][demo].
 Unfortunately, the demo is only meant for illustrative purposes and
 is not running Spindle in real-time.
 
-TODO - Screenshot
+![](https://git.corp.adobe.com/amos/spindle/raw/master/images/page-views.png)
+![](https://git.corp.adobe.com/amos/spindle/raw/master/images/revenue.png)
+![](https://git.corp.adobe.com/amos/spindle/raw/master/images/top-pages-by-browser.png)
 
 [Grunt][grunt] is used to deploy `demo` to [Github pages][ghp]
 in the [gh-pages][ghp] branch with the [grunt-build-control][gbc] plugin.
