@@ -143,6 +143,8 @@ open to further optimizations.
 + *Q7* (**TopReferringDomains**) is the top referring domains for
   the entire date range, not per day.
 
+# HTTP Interface with Spray
+TODO - Describe.
 
 # Deploying to a Spark and HDFS Cluster.
 | ![](https://github.com/adobe-research/spark-cluster-deployment/raw/master/images/initial-deployment-2.png) | ![](https://github.com/adobe-research/spark-cluster-deployment/raw/master/images/application-deployment-1.png) |
@@ -176,7 +178,7 @@ and build the application with `ss-a`, send the JAR to your cluster
 with `ss-sy`, and start Spindle with `ss-st`.
 
 # Benchmarking
-TODO
+TODO - Describe.
 
 ![](https://git.corp.adobe.com/amos/spindle/raw/master/images/caching.png)
 
