@@ -1,0 +1,6 @@
+*.log
+*.txt
+*.pickle
+target
+project/{project,target}
+config.yaml
