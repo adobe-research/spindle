@@ -5,3 +5,4 @@ target
 project/{project,target}
 config.yaml
 node_modules
+__pycache__
