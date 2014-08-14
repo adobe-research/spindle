@@ -47,6 +47,16 @@ The entire Adobe Analytics schema cannot be published,
 but [AnalyticsData.thrift][AnalyticsData.thrift] provides
 a schema with fields common to every analytics events.
 
+Visitors are categorized by concatenating the strings
+post\_visid\_high and post\_visid\_low.
+A visitor has visits, numbered by visit\_num, and multiple hits
+within the visit, occurring at hit\_time\_gmt.
+If the hit is a webpage hit from a browser, the post\_pagename and
+user\_agent fields are used, and the revenue from a hit,
+is denoted in post\_purchaseid and post\_product\_list.
+The visit\_referrer and first\_hit\_referrer fields are processed
+into the data in an enrichment phase.
+
 ```Thrift
 struct AnalyticsData {
   1: string post_pagename;
