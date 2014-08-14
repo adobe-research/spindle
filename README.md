@@ -183,3 +183,4 @@ under the Apache 2 license, and a copy is provided in `LICENSE`.
 
 [AnalyticsData.thrift]: https://git.corp.adobe.com/amos/spindle/blob/master/src/main/thrift/AnalyticsData.thrift
 [spark-parquet-thrift-example]: https://github.com/adobe-research/spark-parquet-thrift-example
+[pjson]: https://git.corp.adobe.com/amos/spindle/blob/master/package.json
