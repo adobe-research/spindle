@@ -139,10 +139,10 @@ Bundled applications are copyright their respective owners.
 [dangrossman/bootstrap-daterangepicker]
 are Apache 2.0 licensed
 and [rlamana/Terminus][terminus] is MIT licensed.
-
 Diagrams are available in the public domain from
 [bamos/beamer-snippets][beamer-snippets].
-Other portions are copyright 2014 Adobe Systems Incorporated
+
+All other portions are copyright 2014 Adobe Systems Incorporated
 under the Apache 2 license, and a copy is provided in `LICENSE`.
 
 [adobe-analytics]: http://www.adobe.com/solutions/digital-analytics.html
