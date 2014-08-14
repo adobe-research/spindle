@@ -11,8 +11,7 @@ as [Hadoop MapReduce][mapreduce], [Apache Spark][spark],
 
 **Spindle is a research-based distributed analytics query
 engine built with Spark.**
-Spark claims 100x speedups over MapReduce for in-memory processing, and
-we chose Spark due to the project's growing popularity.
+Spark claims 100x speedups over MapReduce for in-memory processing.
 This project contains the full Spindle implementation with
 benchmarking scripts to tune Spindle and Spark for maximum performance.
 
@@ -31,22 +30,13 @@ This is developed on CentOS 6.5 with
 sbt 0.13.5, Spark 1.0.0, Hadoop 2.0.0-cdh4.7.0,
 and parquet-thrift 1.5.0.
 
-```
-> cat /etc/centos-release
-CentOS release 6.5 (Final)
-
-> sbt --version
-sbt launcher version 0.13.5
-
-> thrift --version
-Thrift version 0.9.1
-
-> hadoop version
-Hadoop 2.0.0-cdh4.7.0
-
-> cat /usr/lib/spark/RELEASE
-Spark 1.0.0 built for Hadoop 2.0.0-cdh4.7.0
-```
+|---|---|
+| `cat /etc/centos-release` | CentOS release 6.5 (Final) |
+| `sbt --version` | sbt launcher version 0.13.5 |
+| `thrift --version` | Thrift version 0.9.1 |
+| `hadoop version` | Hadoop 2.0.0-cdh4.7.0 |
+| `cat /usr/lib/spark/RELEASE` | Spark 1.0.0 built for Hadoop 2.0.0-cdh4.7.0 |
+|---|---|
 
 ## Testing Thrift Schema
 TODO
