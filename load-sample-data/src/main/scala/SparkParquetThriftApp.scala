@@ -311,7 +311,8 @@ object SparkParquetThriftApp {
 
   def loadDay(sc: SparkContext, date: String, data: Seq[AnalyticsData]) = {
     val job = new Job()
-    val parquetStore=s"hdfs://server_address.com:8020/spindle-sample-data/$date"
+    val parquetStore =
+      s"hdfs://hdfs_master_address:8020/spindle-sample-data/$date"
     println("Writing sample data to Parquet.")
     println("  - ParquetStore: " + parquetStore)
     ParquetThriftOutputFormat.setThriftClass(job, classOf[AnalyticsData])
@@ -326,4 +327,4 @@ object SparkParquetThriftApp {
         job.getConfiguration
       )
   }
-
+}
