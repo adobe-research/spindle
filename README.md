@@ -16,9 +16,17 @@ This project contains the full Spindle implementation with
 benchmarking scripts to tune Spindle and Spark for maximum performance.
 
 # Demo
-TODO
+We used Spindle to generate static webpages that are hosted
+statically [here][demo].
+Unfortunately, the demo is only meant for illustrative purposes and
+is not running Spindle in real-time.
 
-Grunt deploy
+TODO - Screenshot
+
+[Grunt][grunt] is used to deploy `demo` to [Github pages][ghp]
+in the [gh-pages][ghp] branch with the [grunt-build-control][gbc] plugin.
+The [npm][npm] dependencies are managed in [package.json][pjson]
+and can be installed with `npm install`.
 
 # Data Format
 Adobe Analytics events data have 250 columns, and
@@ -158,6 +166,11 @@ under the Apache 2 license, and a copy is provided in `LICENSE`.
 [avro]: http://avro.apache.org/
 [parquet-cascading]: https://github.com/Parquet/parquet-mr/blob/master/parquet_cascading.md
 [parquet-format]: https://github.com/apache/incubator-parquet-format
+
+[grunt]: http://gruntjs.com/
+[ghp]: https://pages.github.com/
+[gbc]: https://github.com/robwierzbowski/grunt-build-control
+[npm]: https://www.npmjs.org/
 
 [scala]: http://scala-lang.org
 [sbt]: http://www.scala-sbt.org/
