@@ -25,8 +25,10 @@ import org.apache.spark.SparkContext._
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.rdd.RDD
 
-// SiteCatalyst Thrift objects.
-import thrift.{SiteCatalyst,SiteCatalystEvar,SiteCatalystProp}
+import scala.math
+
+// Analytics Thrift objects.
+import thrift.AnalyticsData
 
 object RevenueFromTopReferringDomains extends Query {
   def colsNeeded = Seq("visit_referrer", "post_visid_high", "post_visid_low",
@@ -34,7 +36,7 @@ object RevenueFromTopReferringDomains extends Query {
   def run(c: QueryConf) = {
     val allData = c.sc.union(c.data)
     val numAllRows = c.dailyRows.reduce(_+_)
-    val numPartitions = (numAllRows/c.targetPartitionSize).toInt
+    val numPartitions = math.max((numAllRows/c.targetPartitionSize).toInt, 1)
     val topReferrers = allData.collect{
         case (root) if !root.visit_referrer.isEmpty =>
           (BigInt(root.post_visid_high + root.post_visid_low + root.visit_num),

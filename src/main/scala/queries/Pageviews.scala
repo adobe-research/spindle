@@ -25,8 +25,8 @@ import org.apache.spark.SparkContext._
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.rdd.RDD
 
-// SiteCatalyst Thrift objects.
-import thrift.{SiteCatalyst,SiteCatalystEvar,SiteCatalystProp}
+// Analytics Thrift objects.
+import thrift.AnalyticsData
 
 object Pageviews extends Query {
   def colsNeeded = Seq("post_pagename")

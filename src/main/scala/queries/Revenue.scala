@@ -25,8 +25,8 @@ import org.apache.spark.SparkContext._
 import org.apache.spark.storage.StorageLevel
 import org.apache.spark.rdd.RDD
 
-// SiteCatalyst Thrift objects.
-import thrift.{SiteCatalyst,SiteCatalystEvar,SiteCatalystProp}
+// Analytics Thrift objects.
+import thrift.AnalyticsData
 
 object Revenue extends Query {
   def colsNeeded = Seq("post_purchaseid", "post_product_list")
