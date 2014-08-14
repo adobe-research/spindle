@@ -9,7 +9,7 @@ module.exports = function(grunt) {
       },
       pages: {
         options: {
-          remote: 'git@https://git.corp.adobe.com/amos/spindle.git',
+          remote: 'git@git.corp.adobe.com:amos/spindle.git',
           branch: 'gh-pages'
         }
       }
