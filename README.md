@@ -30,6 +30,7 @@ This is developed on CentOS 6.5 with
 sbt 0.13.5, Spark 1.0.0, Hadoop 2.0.0-cdh4.7.0,
 and parquet-thrift 1.5.0.
 
+|---|---|
 | `cat /etc/centos-release` | CentOS release 6.5 (Final) |
 | `sbt --version` | sbt launcher version 0.13.5 |
 | `thrift --version` | Thrift version 0.9.1 |
