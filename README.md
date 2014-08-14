@@ -134,11 +134,16 @@ TODO
 TODO
 
 # License
-TODO
+Bundled applications are copyright their respective owners.
+[Twitter Bootstrap][bootstrap] and
+[dangrossman/bootstrap-daterangepicker]
+are Apache 2.0 licensed
+and [rlamana/Terminus][terminus] is MIT licensed.
 
-Bootstrap - Apache 2.0
-https://github.com/dangrossman/bootstrap-daterangepicker - Apache 2.0
-Terminus - MIT license
+Diagrams are available in the public domain from
+[bamos/beamer-snippets][beamer-snippets].
+Other portions are copyright 2014 Adobe Systems Incorporated
+under the Apache 2 license, and a copy is provided in `LICENSE`.
 
 [adobe-analytics]: http://www.adobe.com/solutions/digital-analytics.html
 [mapreduce]: http://wiki.apache.org/hadoop/MapReduce
