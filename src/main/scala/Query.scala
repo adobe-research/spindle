@@ -26,14 +26,14 @@ import org.apache.spark.rdd.RDD
 import scala.collection.mutable.StringBuilder
 import scala.collection.immutable.ListMap
 
-// SiteCatalyst Thrift objects.
-import thrift.{SiteCatalyst,SiteCatalystEvar,SiteCatalystProp}
+// Adobe analytics Thrift objects.
+import thrift.AnalyticsData
 
 // Java/Guava.
 import java.net.URL
 import com.google.common.net.InternetDomainName
 
-// SiteCatalyst Queries.
+// Analytics Queries.
 import queries._
 
 object QueryMeta {
@@ -72,7 +72,7 @@ object QueryMeta {
 
 case class QueryConf(
   sc: SparkContext,
-  data: Array[RDD[SiteCatalyst]],
+  data: Array[RDD[AnalyticsData]],
   profile: Boolean,
   daysInRange: Seq[String],
   dailyRows: Seq[Long],
