@@ -65,6 +65,7 @@ modeled after
 See [adobe-research/spark-parquet-thrift-example][spark-parquet-thrift-example]
 for more information on running this application.
 
+
 ### hdfs://hdfs_server_address:8020/spindle-sample-data/2014-08-14
 | post_pagename | user_agent | visit_referrer | post_visid_high | post_visid_low | visit_num | hit_time_gmt | post_purchaseid | post_product_list | first_hit_referrer |
 |---|---|---|---|---|---|---|---|---|---|
@@ -161,3 +162,4 @@ Terminus - MIT license
 [sbt-assembly]: https://github.com/sbt/sbt-assembly
 
 [AnalyticsData.thrift]: https://git.corp.adobe.com/amos/spindle/blob/master/src/main/thrift/AnalyticsData.thrift
+[spark-parquet-thrift-example]: https://github.com/adobe-research/spark-parquet-thrift-example
