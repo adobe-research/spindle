@@ -11,8 +11,7 @@ as [Hadoop MapReduce][mapreduce], [Apache Spark][spark],
 
 **Spindle is a research-based distributed analytics query
 engine built with Spark.**
-Spark claims 100x speedups over MapReduce for in-memory processing, and
-we chose Spark due to the project's growing popularity.
+Spark claims 100x speedups over MapReduce for in-memory processing.
 This project contains the full Spindle implementation with
 benchmarking scripts to tune Spindle and Spark for maximum performance.
 
