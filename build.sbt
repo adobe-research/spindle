@@ -21,14 +21,14 @@ import com.github.bigtoast.sbtthrift.ThriftPlugin
 
 assemblySettings
 
-jarName in assembly := "QueryApp.jar"
+jarName in assembly := "Spindle.jar"
 
 // Load "provided" libraries with `sbt run`.
 run in Compile <<= Defaults.runTask(
   fullClasspath in Compile, mainClass in (Compile, run), runner in (Compile, run)
 )
 
-name := "QueryApp"
+name := "Spindle"
 
 version := "1.0"
 
