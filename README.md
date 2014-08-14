@@ -1,6 +1,6 @@
 # Spindle
 
-| ![](https://git.corp.adobe.com/adobe-research/spindle/raw/master/images/architecture.png) | ![](https://git.corp.adobe.com/adobe-research/spindle/raw/master/images/architecture.png) |
+| ![](https://git.corp.adobe.com/amos/spindle/raw/master/images/architecture.png) | ![](https://git.corp.adobe.com/amos/spindle/raw/master/images/architecture.png) |
 |---|---|
 
 Analytics platforms such as [Adobe Analytics][adobe-analytics]
