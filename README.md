@@ -187,7 +187,7 @@ TODO - Describe.
 # License
 Bundled applications are copyright their respective owners.
 [Twitter Bootstrap][bootstrap] and
-[dangrossman/bootstrap-daterangepicker]
+[dangrossman/bootstrap-daterangepicker][bootstrap-daterangepicker]
 are Apache 2.0 licensed
 and [rlamana/Terminus][terminus] is MIT licensed.
 Diagrams are available in the public domain from
@@ -204,10 +204,11 @@ under the Apache 2 license, and a copy is provided in `LICENSE`.
 [spark]: http://spark.apache.org/
 
 [parquet]: http://parquet.io/
-[thrift]: https://thrift.apache.org/
-[avro]: http://avro.apache.org/
 [hdfs]: http://hadoop.apache.org/
+[thrift]: https://thrift.apache.org/
 [thrift-guide]: http://diwakergupta.github.io/thrift-missing-guide/
+[avro]: http://avro.apache.org/
+[spark-parquet-avro]: http://zenfractal.com/2013/08/21/a-powerful-big-data-trio/
 
 [grunt]: http://gruntjs.com/
 [ghp]: https://pages.github.com/
@@ -215,19 +216,20 @@ under the Apache 2 license, and a copy is provided in `LICENSE`.
 [npm]: https://www.npmjs.org/
 
 [scala]: http://scala-lang.org
-[sbt]: http://www.scala-sbt.org/
-[spark-parquet-avro]: http://zenfractal.com/2013/08/21/a-powerful-big-data-trio/
 [rdd]: http://spark.apache.org/docs/latest/api/scala/index.html#org.apache.spark.rdd.RDD
+
+[sbt]: http://www.scala-sbt.org/
 [sbt-thrift]: https://github.com/bigtoast/sbt-thrift
 [sbt-assembly]: https://github.com/sbt/sbt-assembly
 
 [pjson]: https://git.corp.adobe.com/amos/spindle/blob/master/package.json
 [AnalyticsData.thrift]: https://git.corp.adobe.com/amos/spindle/blob/master/src/main/thrift/AnalyticsData.thrift
 
+[demo]: http://adobe-research.github.io/spindle/
 [spark-parquet-thrift-example]: https://github.com/adobe-research/spark-parquet-thrift-example
 [spark-cluster-deployment]: https://github.com/adobe-research/spark-cluster-deployment
 
-[demo]: http://adobe-research.github.io/spindle/
 [bootstrap]: http://getbootstrap.com/
 [terminus]: https://github.com/rlamana/Terminus
 [beamer-snippets]: https://github.com/bamos/beamer-snippets
+[bootstrap-daterangepicker]: https://github.com/dangrossman/bootstrap-daterangepicker
