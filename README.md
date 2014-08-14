@@ -145,7 +145,8 @@ open to further optimizations.
 + *Q7* (**TopReferringDomains**) is the top referring domains for
   the entire date range, not per day.
 
-# HTTP Interface with Spray
+# Spindle Architecture
+![](https://git.corp.adobe.com/amos/spindle/raw/master/images/architecture.png)
 TODO - Describe.
 
 # Deploying to a Spark and HDFS Cluster.
