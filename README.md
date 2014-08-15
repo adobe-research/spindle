@@ -9,16 +9,44 @@ and there are many distributed data processing technologies such
 as [Hadoop MapReduce][mapreduce], [Apache Spark][spark],
 [Apache Drill][drill], and [Cloudera Impala][impala].
 
-**Spindle is a research-based distributed analytics query
-engine built with Spark.**
-Spark claims 100x speedups over MapReduce for in-memory processing.
-This project contains the full Spindle implementation with
-benchmarking scripts to tune Spindle and Spark for maximum performance.
+Spark is part of the [Apache Software Foundation][apache]
+and claims speedups up to 100x faster than Hadoop for in-memory
+processing.
+Spark is shifting from a research project to a production-ready library,
+and academic publications and presentations from
+the [2014 Spark Summit][2014-spark-summit]
+archives several use cases of Spark and related technology.
+For example,
+[NBC Universal][nbc] presents their use of Spark to query [HBase][hbase]
+tables and analyze an international cable TV video distribution [here][nbc-pres].
+[Telefonica CBP][telefonica] presents their use of
+Spark with [Cassandra][cassandra]
+for cyber security analytics [here][telefonica-pres].
+[ADAM][adam] is an open source data storage format and processing
+pipeline for genomics data built in Spark and [Parquet][parquet].
+
+Even though people are publishing use cases of Spark,
+few people have published
+experiences of building and tuning production-ready Spark systems.
+Thorough knowledge of Spark internals
+and libraries that interoperate well with Spark is necessary
+to achieve optimal performance from Spark applications.
+
+**Spindle is a prototype Spark-based web analytics query engine designed
+around the requirements of production workloads.**
+Spindle exposes query requests through a multi-threaded
+HTTP interface implemented with [Spray][spray]
+Queries are processed by loading data from [Apache Parquet][parquet] columnar
+storage format on the
+[Hadoop distributed filesystem][hdfs].
+
+This repo contains the Spindle implementation and benchmarking scripts
+to observe Spindle's performance while exploring Spark's tuning options.
 
 # Demo
 We used Spindle to generate static webpages that are hosted
 statically [here][demo].
-Unfortunately, the demo is only meant for illustrative purposes and
+Unfortunately, the demo is only for illustrative purposes and
 is not running Spindle in real-time.
 
 ![](https://git.corp.adobe.com/amos/spindle/raw/master/images/top-pages-by-browser.png)
@@ -35,8 +63,14 @@ and sometimes significantly more than 250 columns.
 Most queries use less than 7 columns, and loading all of the
 columns into memory to only use 7 is inefficient.
 Spindle stores event data in the [Parquet][parquet] columnar store
-on the [Hadoop Distributed File System][hdfs] (HDFS)
+on the [Hadoop Distributed File System][hdfs] (HDFS) with
+[Kryo][kryo] serialization enabled
 to only load the subsets of columns each query requires.
+
+[Cassandra][cassandra] is a NoSQL database that we considered
+as an alternate to Parquet.
+However, Spindle also utilizes [Spark SQL][spark-sql],
+which supports Parquet, but not Cassandra.
 
 Parquet can be used with [Avro][avro] or [Thrift][thrift] schemas.
 [Matt Massie's article][spark-parquet-avro] provides an example of
@@ -52,15 +86,15 @@ The entire Adobe Analytics schema cannot be published,
 but [AnalyticsData.thrift][AnalyticsData.thrift] provides
 a schema with fields common to every analytics events.
 
+Columns postprocessed into the data after collection have the `post_`
+prefix along with `visit_referrer` and `first_hit_referrer`.
 Visitors are categorized by concatenating the strings
-post\_visid\_high and post\_visid\_low.
-A visitor has visits, numbered by visit\_num, and multiple hits
-within the visit, occurring at hit\_time\_gmt.
-If the hit is a webpage hit from a browser, the post\_pagename and
-user\_agent fields are used, and the revenue from a hit,
-is denoted in post\_purchaseid and post\_product\_list.
-The visit\_referrer and first\_hit\_referrer fields are processed
-into the data in an enrichment phase.
+`post_visid_high` and `post_visid_low`.
+A visitor has visits which are numbered by `visit_num`,
+and a visit has hits that occur at `hit_time_gmt`.
+If the hit is a webpage hit from a browser, the `post_pagename` and
+`user_agent` fields are used, and the revenue from a hit,
+is denoted in `post_purchaseid` and `post_product_list`.
 
 ```Thrift
 struct AnalyticsData {
@@ -77,9 +111,7 @@ struct AnalyticsData {
 }
 ```
 
-This data is separated by day on disk of format `YYYY-MM-DD`,
-which provides the advantage of not having to filter to separate
-data by day.
+This data is separated by day on disk of format `YYYY-MM-DD`.
 
 ## Loading Sample Data
 The `load-sample-data` directory contains a Scala program
@@ -87,7 +119,8 @@ to load the following sample data into [HDFS][hdfs]
 modeled after
 [adobe-research/spark-parquet-thrift-example][spark-parquet-thrift-example].
 See [adobe-research/spark-parquet-thrift-example][spark-parquet-thrift-example]
-for more information on running this application.
+for more information on running this application
+with [adobe-research/spark-cluster-deployment][spark-cluster-deployment].
 
 ### hdfs://hdfs_server_address:8020/spindle-sample-data/2014-08-14
 | post_pagename | user_agent | visit_referrer | post_visid_high | post_visid_low | visit_num | hit_time_gmt | post_purchaseid | post_product_list | first_hit_referrer |
@@ -122,8 +155,11 @@ for more information on running this application.
 | Page C | Safari | http://google.com | 333 | 333 | 1 | 1408187388 | | | http://facebook.com
 
 # Queries.
-Spindle includes eight reference queries which are
-open to further optimizations.
+Spindle includes eight queries that are representative of
+the data sets and computations of real queries the
+Adobe Marketing Cloud processes.
+All collect statements refer to the combined filter and map operation,
+not the operation to gather an RDD as a local Scala object.
 
 + *Q0* (**Pageviews**)
   is a breakdown of the number of pages viewed
@@ -132,12 +168,12 @@ open to further optimizations.
   the specified range.
 + *Q2* (**RevenueFromTopReferringDomains**) obtains the top referring
   domains for each visit and breaks down the revenue by day.
-  The visit\_referrer field is preprocessed into each record in
+  The `visit_referrer` field is preprocessed into each record in
   the raw data.
 + *Q3* (**RevenueFromTopReferringDomainsFirstVisitGoogle**) is
   the same as RevenueFromTopReferringDomains, but with the
   visitor's absolute first referrer from Google.
-  The first\_hit\_referrer field is preprocessed into each record in
+  The `first_hit_referrer` field is preprocessed into each record in
   the raw data.
 + *Q4* (**TopPages**) is a breakdown of the top pages for the
   entire date range, not per day.
@@ -147,6 +183,17 @@ open to further optimizations.
   pages a visitor was at for TopPages.
 + *Q7* (**TopReferringDomains**) is the top referring domains for
   the entire date range, not per day.
+
+The following table shows the columnar subset
+each query utilizes.
+
+![](https://git.corp.adobe.com/amos/spindle/raw/master/images/columns-needed.png)
+
+The following table shows the operations each query performs
+and is intended as a summary rather than full description of
+the implementations.
+
+![](https://git.corp.adobe.com/amos/spindle/raw/master/images/query-operations.png)
 
 # Spindle Architecture
 ![](https://git.corp.adobe.com/amos/spindle/raw/master/images/architecture.png)
