@@ -57,63 +57,7 @@ in the [gh-pages][ghp] branch with the [grunt-build-control][gbc] plugin.
 The [npm][npm] dependencies are managed in [package.json][pjson]
 and can be installed with `npm install`.
 
-# Data Format
-Adobe Analytics events data have at least 250 columns,
-and sometimes significantly more than 250 columns.
-Most queries use less than 7 columns, and loading all of the
-columns into memory to only use 7 is inefficient.
-Spindle stores event data in the [Parquet][parquet] columnar store
-on the [Hadoop Distributed File System][hdfs] (HDFS) with
-[Kryo][kryo] serialization enabled
-to only load the subsets of columns each query requires.
-
-[Cassandra][cassandra] is a NoSQL database that we considered
-as an alternate to Parquet.
-However, Spindle also utilizes [Spark SQL][spark-sql],
-which supports Parquet, but not Cassandra.
-
-Parquet can be used with [Avro][avro] or [Thrift][thrift] schemas.
-[Matt Massie's article][spark-parquet-avro] provides an example of
-using Parquet with Avro.
-[adobe-research/spark-parquet-thrift-example][spark-parquet-thrift-example]
-is a complete [Scala][scala]/[sbt][sbt] project
-using Thrift for data serialization and shows how to only load the
-specified columnar subset.
-For a more detailed introduction to Thrift,
-see [Thrift: The Missing Guide][thrift-guide].
-
-The entire Adobe Analytics schema cannot be published,
-but [AnalyticsData.thrift][AnalyticsData.thrift] provides
-a schema with fields common to every analytics events.
-
-Columns postprocessed into the data after collection have the `post_`
-prefix along with `visit_referrer` and `first_hit_referrer`.
-Visitors are categorized by concatenating the strings
-`post_visid_high` and `post_visid_low`.
-A visitor has visits which are numbered by `visit_num`,
-and a visit has hits that occur at `hit_time_gmt`.
-If the hit is a webpage hit from a browser, the `post_pagename` and
-`user_agent` fields are used, and the revenue from a hit,
-is denoted in `post_purchaseid` and `post_product_list`.
-
-```Thrift
-struct AnalyticsData {
-  1: string post_pagename;
-  2: string user_agent;
-  3: string visit_referrer;
-  4: string post_visid_high;
-  5: string post_visid_low;
-  6: string visit_num;
-  7: string hit_time_gmt;
-  8: string post_purchaseid;
-  9: string post_product_list;
-  10: string first_hit_referrer;
-}
-```
-
-This data is separated by day on disk of format `YYYY-MM-DD`.
-
-## Loading Sample Data
+# Loading Sample Data
 The `load-sample-data` directory contains a Scala program
 to load the following sample data into [HDFS][hdfs]
 modeled after
@@ -192,21 +136,148 @@ each query utilizes.
 The following table shows the operations each query performs
 and is intended as a summary rather than full description of
 the implementations.
+The bold text in indicate operations in which the target
+partition size is specified, which is further described in the
+"Partitioning" section below.
 
 ![](https://git.corp.adobe.com/amos/spindle/raw/master/images/query-operations.png)
 
 # Spindle Architecture
-![](https://git.corp.adobe.com/amos/spindle/raw/master/images/architecture.png)
-TODO - Describe.
+The query engine provides a request and response interface to
+interact with the application layer, and Spindle's goal is to
+benchmark a realistic low latency web analytics query engine.
 
-# Deploying to a Spark and HDFS Cluster.
+Spindle provides query requests and reports over HTTP with the
+[Spray][spray] library, which is multi-threaded and provides
+REST/HTTP-based integration layer on Scala for queries and parameters,
+as illustrated in the figure below.
+
+![](https://git.corp.adobe.com/amos/spindle/raw/master/images/architecture.png)
+
+When a user request to execute a query over HTTP,
+Spray allocates a thread to process the HTTP request and converts
+it into a Spray request.
+The Spray request follows a route defined in the `QueryService` Actor,
+and queries are processed with the `QueryProcessor` singleton object.
+The `QueryProcessor` interacts with a global Spark context,
+which connects the Scala application to the Spark cluster.
+
+The Spark context supports multi-threading and offers a
+`FIFO` and `FAIR` scheduling options for concurrent queries.
+Spindle uses Spark's `FAIR` scheduling option to minimize overall latency.
+
+## Data Format
+Adobe Analytics events data have at least 250 columns,
+and sometimes significantly more than 250 columns.
+Most queries use less than 7 columns, and loading all of the
+columns into memory to only use 7 is inefficient.
+Spindle stores event data in the [Parquet][parquet] columnar store
+on the [Hadoop Distributed File System][hdfs] (HDFS) with
+[Kryo][kryo] serialization enabled
+to only load the subsets of columns each query requires.
+
+[Cassandra][cassandra] is a NoSQL database that we considered
+as an alternate to Parquet.
+However, Spindle also utilizes [Spark SQL][spark-sql],
+which supports Parquet, but not Cassandra.
+
+Parquet can be used with [Avro][avro] or [Thrift][thrift] schemas.
+[Matt Massie's article][spark-parquet-avro] provides an example of
+using Parquet with Avro.
+[adobe-research/spark-parquet-thrift-example][spark-parquet-thrift-example]
+is a complete [Scala][scala]/[sbt][sbt] project
+using Thrift for data serialization and shows how to only load the
+specified columnar subset.
+For a more detailed introduction to Thrift,
+see [Thrift: The Missing Guide][thrift-guide].
+
+The entire Adobe Analytics schema cannot be published,
+but [AnalyticsData.thrift][AnalyticsData.thrift] provides
+a schema with fields common to every analytics events.
+
+Columns postprocessed into the data after collection have the `post_`
+prefix along with `visit_referrer` and `first_hit_referrer`.
+Visitors are categorized by concatenating the strings
+`post_visid_high` and `post_visid_low`.
+A visitor has visits which are numbered by `visit_num`,
+and a visit has hits that occur at `hit_time_gmt`.
+If the hit is a webpage hit from a browser, the `post_pagename` and
+`user_agent` fields are used, and the revenue from a hit,
+is denoted in `post_purchaseid` and `post_product_list`.
+
+```Thrift
+struct AnalyticsData {
+  1: string post_pagename;
+  2: string user_agent;
+  3: string visit_referrer;
+  4: string post_visid_high;
+  5: string post_visid_low;
+  6: string visit_num;
+  7: string hit_time_gmt;
+  8: string post_purchaseid;
+  9: string post_product_list;
+  10: string first_hit_referrer;
+}
+```
+
+This data is separated by day on disk of format `YYYY-MM-DD`.
+
+## Caching Data
+Spindle provides a caching option that will cache the loaded
+Spark data in memory between query requests to show the
+maximum speedup caching provides.
+Caching introduces a number of interesting questions when dealing
+with sparse data.
+For example, two queries could be submitted on the same date range
+that request overlapping, but not identical, column subsets.
+How should these data sets with partially overlapping values be
+cached in the application?
+What if one of the queries is called substantially more times than
+the other? How should the caching policy ensure these columns are
+not evicted?
+We will explore these questions in future work.
+
+## Partitioning
+Spark affords partitioning data across nodes for operations
+such as `distinct`, `reduceByKey`, and `groupByKey` to specify the
+minimum number of resulting partitions.
+
+Counting the number of records in an RDD
+expensive, and automatically knowing the optimal number of partitions
+for operations depends highly on the data and operations.
+For optimal partitioning, applications should estimate the
+number of records to process and ensure the partitions contain
+some minimum value of records.
+
+Spindle puts a target number of records in each partition
+by estimating the total number of records to be processed
+from Parquet's metadata.
+However, most queries filter records before doing operations that
+impact the partitioning by approximately 50\% in our data.
+For example, an empty `post_pagename` field indicates that the
+analytics hit is from an event other than a user visiting a page,
+and the first Spark operation in TopPages is to obtain only
+the page visit hits by filtering out records with empty `post_pagename`
+fields.
+
+# Installing Spark and HDFS on a cluster.
 | ![](https://github.com/adobe-research/spark-cluster-deployment/raw/master/images/initial-deployment-2.png) | ![](https://github.com/adobe-research/spark-cluster-deployment/raw/master/images/application-deployment-1.png) |
 |---|---|
 
-We have released
-[adobe-research/spark-cluster-deployment][spark-cluster-deployment]
-to simplify Spark cluster installation and application deployment.
-Please refer to this project to learn how we deploy Spindle.
+Spark 1.0.0 can be deployed to traditional cloud and job management services
+such as [EC2][spark-ec2], [Mesos][spark-mesos], or
+[Yarn][spark-yarn].
+Further, Spark's [standalone cluster][spark-standalone] mode enables
+Spark to run on other servers without installing other
+job management services.
+
+However, configuring and submitting applications to a Spark 1.0.0 standalone
+cluster currently requires files to be synchronized across the entire cluster,
+including the Spark installation directory.
+These problems have motivated our
+[adobe-research/spark-cluster-deployment][spark-cluster-deployment] project,
+which utilizes [Fabric][fabric] and [Puppet][puppet] to further automate
+the Spark standalone cluster.
 
 # Building
 
@@ -230,10 +301,87 @@ modify `config.yaml` to have your server configurations,
 and build the application with `ss-a`, send the JAR to your cluster
 with `ss-sy`, and start Spindle with `ss-st`.
 
-# Benchmarking
-TODO - Describe.
+# Benchmarking Results
+All experiments leverage a homogeneous six node production cluster
+of HP ProLiant DL360p Gen8 blades.
+Each node has 32GB of DDR3 memory at 1333MHz,
+(2) 6 core Intel Xeon 0 processors at 2.30GHz and 1066MHz FSB,
+and (10) 15K SAS 146GB, RAID 5 hard disks.
+Furthermore, each node has CentOS 6.5, Hadoop 2.0.0-cdh4.7.0,
+Spark 1.0.0, sbt 0.13.5, and Thrift 0.9.1.
+The Spark workers each utilizes 21g of memory.
 
+These experiments benchmark Spindle's queries
+on a week's worth of data consuming 13.1G as serialized Thrift objects
+in Parquet.
+
+## Intermediate data partitioning.
+Spark cannot optimize the number of records in the partitions
+because counting the number of records in the initial and
+intermediate data sets is expensive, and the
+Spark application has to provide the number of partitions
+to use for certain computations.
+This experiment fully utilizes all six nodes with Spark (144 cores)
+and HDFS workers.
+
+Averaging four execution times for each point between
+10,000 and 1,500,000 target partition sizes for every query
+results in similar performance to the TopPages query (Q4) shown below.
+
+![](https://git.corp.adobe.com/amos/spindle/raw/master/TODO.png)
+
+Targeting 10,000 records per partition results in poor performance,
+which we suspect is due to the Spark overhead of creating an execution
+environment for the task, and the performance monotonically decreases
+and levels off at a target partition size of 1,500,000.
+This experiment fully utilizes all six nodes with Spark (144 cores)
+and HDFS workers.
+
+The table below summarizes the results from all queries
+by showing the best average execution times for all partitions
+and the execution time at a target partition size of 1,500,000.
+Q2 and Q3 have nearly identical performance because Q3
+only adds a filter to Q2.
+
+![](https://git.corp.adobe.com/amos/spindle/raw/master/images/partitioning.png)
+
+The remaining experiments use a target partition size of 1,500,000,
+and the performance is the best observed for the operations with partitioning.
+We expect the support for specifying partitioning for
+loading Parquet data from HDFS will yield further performance results.
+
+## Impact of caching on query execution time.
+This experiment shows the ideal speedups from having
+all the data in memory as RDD's.
+Furthermore, the performances from caching in this experiment
+are better than the performances from caching the raw data in memory because
+the RDD is cached, and the time to load raw data
+into a RDD is non-negligible.
+
+The figure below shows the average execution times from four trials
+of every query with and without caching.
+Caching the data substantially improves performance, but
+reveals that Spindle has further performance bottlenecks inhibiting
+subsecond query execution time.
+These bottlenecks can be partially overcome by preprocessing the data
+and further analyzing Spark internals.
 ![](https://git.corp.adobe.com/amos/spindle/raw/master/images/caching.png)
+
+## Query execution time for concurrent queries.
+Spindle's can process concurrent queries with multi-threading, since
+many users will use the analytics application concurrently.
+Users will request different queries concurrently,
+but for simplicity, this experiment shows the performance
+degradation as the same query is called with an increasing
+number of threads with in-memory caching.
+
+This experiment will spawn a number of threads which continuously
+execute the same query.
+Each thread remains loaded and continues processing
+queries until all threads have processed four queries,
+and the average execution time of the first four queries
+from every thread will be used as a metric to estimate the
+slowdowns.
 
 # License
 Bundled applications are copyright their respective owners.
