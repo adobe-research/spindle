@@ -19,7 +19,7 @@ archives several use cases of Spark and related technology.
 For example,
 [NBC Universal][nbc] presents their use of Spark to query [HBase][hbase]
 tables and analyze an international cable TV video distribution [here][nbc-pres].
-[Telefonica CBP][telefonica] presents their use of
+Telefonica presents their use of
 Spark with [Cassandra][cassandra]
 for cyber security analytics [here][telefonica-pres].
 [ADAM][adam] is an open source data storage format and processing
@@ -328,7 +328,7 @@ Averaging four execution times for each point between
 10,000 and 1,500,000 target partition sizes for every query
 results in similar performance to the TopPages query (Q4) shown below.
 
-![](https://git.corp.adobe.com/amos/spindle/raw/master/TODO.png)
+![](https://git.corp.adobe.com/amos/spindle/raw/master/partitioning-top-pages.png)
 
 Targeting 10,000 records per partition results in poor performance,
 which we suspect is due to the Spark overhead of creating an execution
@@ -343,7 +343,7 @@ and the execution time at a target partition size of 1,500,000.
 Q2 and Q3 have nearly identical performance because Q3
 only adds a filter to Q2.
 
-![](https://git.corp.adobe.com/amos/spindle/raw/master/images/partitioning.png)
+![](https://git.corp.adobe.com/amos/spindle/raw/master/images/partitioning-table.png)
 
 The remaining experiments use a target partition size of 1,500,000,
 and the performance is the best observed for the operations with partitioning.
@@ -383,6 +383,26 @@ and the average execution time of the first four queries
 from every thread will be used as a metric to estimate the
 slowdowns.
 
+The performance of the TopPages query below
+is indicative of the performance of most queries.
+TopPages appears to underutilize the Spark system when
+processing in serial, and the Spark schedule is able to process
+two queries concurrently and return them as a factor of 1.39 of
+the original execution time.
+
+![](https://git.corp.adobe.com/amos/spindle/raw/master/images/concurrent-top-pages.png)
+
+The slowdown factors from serial execution are shown in
+the table below for two and eight concurrent queries.
+
+![](https://git.corp.adobe.com/amos/spindle/raw/master/images/concurrent-table.png)
+
+This experiment shows the ability of Spark's scheduler at the
+small scale of six nodes.
+The slowdowns for two concurrent queries indicate further query optimizations
+could better balance the work between all Spark workers and
+likely result in better query execution time.
+
 # License
 Bundled applications are copyright their respective owners.
 [Twitter Bootstrap][bootstrap] and
@@ -401,13 +421,31 @@ under the Apache 2 license, and a copy is provided in `LICENSE`.
 [drill]: http://incubator.apache.org/drill/
 [impala]: http://www.cloudera.com/content/cloudera/en/products-and-services/cdh/impala.html
 [spark]: http://spark.apache.org/
+[spark-sql]: https://spark.apache.org/sql/
+[spark-ec2]: http://spark.apache.org/docs/1.0.0/ec2-scripts.html
+[spark-mesos]: http://spark.apache.org/docs/1.0.0/running-on-mesos.html
+[spark-yarn]: http://spark.apache.org/docs/1.0.0/running-on-yarn.html
+[spark-standalone]: http://spark.apache.org/docs/1.0.0/spark-standalone.html
 
+[apache]: http://www.apache.org/
+[hbase]: http://hbase.apache.org/
+[cassandra]: http://cassandra.apache.org
 [parquet]: http://parquet.io/
 [hdfs]: http://hadoop.apache.org/
 [thrift]: https://thrift.apache.org/
 [thrift-guide]: http://diwakergupta.github.io/thrift-missing-guide/
 [avro]: http://avro.apache.org/
 [spark-parquet-avro]: http://zenfractal.com/2013/08/21/a-powerful-big-data-trio/
+[spray]: http://spray.io
+[kryo]: https://github.com/EsotericSoftware/kryo
+[fabric]: http://www.fabfile.org/
+[puppet]: http://puppetlabs.com/puppet/puppet-open-source
+
+[2014-spark-summit]: http://spark-summit.org/2014
+[nbc]: http://www.nbcuni.com/
+[nbc-pres]: http://spark-summit.org/wp-content/uploads/2014/06/Using-Spark-to-Generate-Analytics-for-International-Cable-TV-Video-Distribution-Christopher-Burdorf.pdf
+[telefonica-pres]: http://spark-summit.org/wp-content/uploads/2014/07/Spark-use-case-at-Telefonica-CBS-Fran-Gomez.pdf
+[adam]: https://github.com/bigdatagenomics/adam
 
 [grunt]: http://gruntjs.com/
 [ghp]: https://pages.github.com/
