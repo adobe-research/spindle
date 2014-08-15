@@ -35,7 +35,7 @@ to achieve optimal performance from Spark applications.
 **Spindle is a prototype Spark-based web analytics query engine designed
 around the requirements of production workloads.**
 Spindle exposes query requests through a multi-threaded
-HTTP interface implemented with [Spray][spray]
+HTTP interface implemented with [Spray][spray].
 Queries are processed by loading data from [Apache Parquet][parquet] columnar
 storage format on the
 [Hadoop distributed filesystem][hdfs].
