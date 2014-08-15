@@ -1,6 +1,6 @@
 # Spindle
 
-![](https://git.corp.adobe.com/amos/spindle/raw/master/images/architecture.png)
+![](https://github.com/adobe-research/spindle/raw/master/images/architecture.png)
 
 Analytics platforms such as [Adobe Analytics][adobe-analytics]
 are growing to process petabytes of data in real-time.
@@ -49,8 +49,8 @@ statically [here][demo].
 Unfortunately, the demo is only for illustrative purposes and
 is not running Spindle in real-time.
 
-![](https://git.corp.adobe.com/amos/spindle/raw/master/images/top-pages-by-browser.png)
-![](https://git.corp.adobe.com/amos/spindle/raw/master/images/adhoc.png)
+![](https://github.com/adobe-research/spindle/raw/master/images/top-pages-by-browser.png)
+![](https://github.com/adobe-research/spindle/raw/master/images/adhoc.png)
 
 [Grunt][grunt] is used to deploy `demo` to [Github pages][ghp]
 in the [gh-pages][ghp] branch with the [grunt-build-control][gbc] plugin.
@@ -131,7 +131,7 @@ not the operation to gather an RDD as a local Scala object.
 The following table shows the columnar subset
 each query utilizes.
 
-![](https://git.corp.adobe.com/amos/spindle/raw/master/images/columns-needed.png)
+![](https://github.com/adobe-research/spindle/raw/master/images/columns-needed.png)
 
 The following table shows the operations each query performs
 and is intended as a summary rather than full description of
@@ -140,7 +140,7 @@ The bold text in indicate operations in which the target
 partition size is specified, which is further described in the
 "Partitioning" section below.
 
-![](https://git.corp.adobe.com/amos/spindle/raw/master/images/query-operations.png)
+![](https://github.com/adobe-research/spindle/raw/master/images/query-operations.png)
 
 # Spindle Architecture
 The query engine provides a request and response interface to
@@ -152,7 +152,7 @@ Spindle provides query requests and reports over HTTP with the
 REST/HTTP-based integration layer on Scala for queries and parameters,
 as illustrated in the figure below.
 
-![](https://git.corp.adobe.com/amos/spindle/raw/master/images/architecture.png)
+![](https://github.com/adobe-research/spindle/raw/master/images/architecture.png)
 
 When a user request to execute a query over HTTP,
 Spray allocates a thread to process the HTTP request and converts
@@ -328,7 +328,7 @@ Averaging four execution times for each point between
 10,000 and 1,500,000 target partition sizes for every query
 results in similar performance to the TopPages query (Q4) shown below.
 
-![](https://git.corp.adobe.com/amos/spindle/raw/master/partitioning-top-pages.png)
+![](https://github.com/adobe-research/spindle/raw/master/partitioning-top-pages.png)
 
 Targeting 10,000 records per partition results in poor performance,
 which we suspect is due to the Spark overhead of creating an execution
@@ -343,7 +343,7 @@ and the execution time at a target partition size of 1,500,000.
 Q2 and Q3 have nearly identical performance because Q3
 only adds a filter to Q2.
 
-![](https://git.corp.adobe.com/amos/spindle/raw/master/images/partitioning-table.png)
+![](https://github.com/adobe-research/spindle/raw/master/images/partitioning-table.png)
 
 The remaining experiments use a target partition size of 1,500,000,
 and the performance is the best observed for the operations with partitioning.
@@ -365,7 +365,7 @@ reveals that Spindle has further performance bottlenecks inhibiting
 subsecond query execution time.
 These bottlenecks can be partially overcome by preprocessing the data
 and further analyzing Spark internals.
-![](https://git.corp.adobe.com/amos/spindle/raw/master/images/caching.png)
+![](https://github.com/adobe-research/spindle/raw/master/images/caching.png)
 
 ## Query execution time for concurrent queries.
 Spindle's can process concurrent queries with multi-threading, since
@@ -390,12 +390,12 @@ processing in serial, and the Spark schedule is able to process
 two queries concurrently and return them as a factor of 1.39 of
 the original execution time.
 
-![](https://git.corp.adobe.com/amos/spindle/raw/master/images/concurrent-top-pages.png)
+![](https://github.com/adobe-research/spindle/raw/master/images/concurrent-top-pages.png)
 
 The slowdown factors from serial execution are shown in
 the table below for two and eight concurrent queries.
 
-![](https://git.corp.adobe.com/amos/spindle/raw/master/images/concurrent-table.png)
+![](https://github.com/adobe-research/spindle/raw/master/images/concurrent-table.png)
 
 This experiment shows the ability of Spark's scheduler at the
 small scale of six nodes.
@@ -459,8 +459,8 @@ under the Apache 2 license, and a copy is provided in `LICENSE`.
 [sbt-thrift]: https://github.com/bigtoast/sbt-thrift
 [sbt-assembly]: https://github.com/sbt/sbt-assembly
 
-[pjson]: https://git.corp.adobe.com/amos/spindle/blob/master/package.json
-[AnalyticsData.thrift]: https://git.corp.adobe.com/amos/spindle/blob/master/src/main/thrift/AnalyticsData.thrift
+[pjson]: https://github.com/adobe-research/spindle/blob/master/package.json
+[AnalyticsData.thrift]: https://github.com/adobe-research/spindle/blob/master/src/main/thrift/AnalyticsData.thrift
 
 [demo]: http://adobe-research.github.io/spindle/
 [spark-parquet-thrift-example]: https://github.com/adobe-research/spark-parquet-thrift-example
