@@ -177,6 +177,7 @@ object QueryHandler {
       .set("spark.cores.max", maxCores.toString)
       .set("spark.kryo.registrator", "com.adobe.MyRegistrator")
       .set("spark.default.parallelism", (maxCores).toString)
+      .set("spark.scheduling.mode", "FAIR")
     new SparkContext(conf)
   }
 
