@@ -372,7 +372,7 @@ reveals that Spindle has further performance bottlenecks inhibiting
 subsecond query execution time.
 These bottlenecks can be partially overcome by preprocessing the data
 and further analyzing Spark internals.
-![](https://github.com/adobe-research/spindle/raw/master/images/caching.png)
+![](https://github.com/adobe-research/spindle/raw/master/benchmark-scripts/caching/caching.png)
 
 ## Query execution time for concurrent queries.
 Spindle's can process concurrent queries with multi-threading, since
