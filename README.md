@@ -315,6 +315,9 @@ These experiments benchmark Spindle's queries
 on a week's worth of data consuming 13.1G as serialized Thrift objects
 in Parquet.
 
+The YAML formatted results, scripts, and resulting figures
+are in the [benchmark-scripts][benchmark-scripts] directory.
+
 ## Intermediate data partitioning.
 Spark cannot optimize the number of records in the partitions
 because counting the number of records in the initial and
@@ -477,6 +480,7 @@ under the Apache 2 license, and a copy is provided in `LICENSE`.
 
 [pjson]: https://github.com/adobe-research/spindle/blob/master/package.json
 [AnalyticsData.thrift]: https://github.com/adobe-research/spindle/blob/master/src/main/thrift/AnalyticsData.thrift
+[benchmark-scipts]: https://github.com/adobe-research/spindle/tree/master/benchmark-scripts
 
 [demo]: http://adobe-research.github.io/spindle/
 [spark-parquet-thrift-example]: https://github.com/adobe-research/spark-parquet-thrift-example
