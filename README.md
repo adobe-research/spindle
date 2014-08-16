@@ -394,15 +394,24 @@ The performance of the TopPages query below
 is indicative of the performance of most queries.
 TopPages appears to underutilize the Spark system when
 processing in serial, and the Spark schedule is able to process
-two queries concurrently and return them as a factor of 1.39 of
+two queries concurrently and return them as a factor of 1.32 of
 the original execution time.
 
-![](https://github.com/adobe-research/spindle/raw/master/images/concurrent-top-pages.png)
+![](https://github.com/adobe-research/spindle/raw/master/benchmark-scripts/concurrent/png/TopPages.png)
 
 The slowdown factors from serial execution are shown in
 the table below for two and eight concurrent queries.
 
-![](https://github.com/adobe-research/spindle/raw/master/images/concurrent-table.png)
+| Query | Serial Time (ms) | 2 Concurrent Slowdown | 8 Concurrent Slowdown |
+|---|---|---|---|
+| Pageviews | 2.70 | 1.63 | 5.98 |
+| TopPages | 3.37 | 1.32 | 5.66 |
+| TopPagesByBrowser | 15.93 | 2.02 | 7.58 |
+| TopPagesByPreviousTopPages | 37.49 | 1.24 | 4.15 |
+| Revenue | 2.74 | 1.53 | 5.82 |
+| TopReferringDomains | 5.75 | 1.19 | 4.45 |
+| RevenueFromTopReferringDomains | 17.79 | 1.55 | 5.91 |
+| RevenueFromTopReferringDomainsFirstVisitGoogle | 16.35 | 1.68 | 7.29 |
 
 This experiment shows the ability of Spark's scheduler at the
 small scale of six nodes.
