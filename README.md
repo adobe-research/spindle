@@ -344,13 +344,13 @@ Q2 and Q3 have nearly identical performance because Q3
 only adds a filter to Q2.
 
 | Query | Best Execution Time (s) | Final Execution Time (s) |
+|---|---|---|
 | TopPages | 3.31 | 3.37 |
 | TopPagesByBrowser | 15.41 | 15.58 |
 | TopPagesByPreviousTopPages | 34.70 | 36.89 |
 | TopReferringDomains | 5.68 | 5.68 |
 | RevenueFromTopReferringDomains | 16.66 | 16.661 |
 | RevenueFromTopReferringDomainsFirstVisitGoogle | 16.89 | 16.89 |
-|---|---|---|
 
 The remaining experiments use a target partition size of 1,500,000,
 and the performance is the best observed for the operations with partitioning.
