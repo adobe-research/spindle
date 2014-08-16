@@ -1,0 +1,188 @@
+3:
+  dataLoad:
+  - 35253
+  - 27439
+  - 27757
+  - 26982
+  execution:
+    Pageviews:
+    - 2552
+    - 2439
+    - 2720
+    - 2429
+    Revenue:
+    - 2090
+    - 2151
+    - 2049
+    - 2412
+    RevenueFromTopReferringDomains:
+    - 17271
+    - 16976
+    - 17343
+    - 16827
+    RevenueFromTopReferringDomainsFirstVisitGoogle:
+    - 52975
+    - 62450
+    - 48788
+    - 56374
+    TopPages:
+    - 3213
+    - 3067
+    - 3219
+    - 3028
+    TopPagesByBrowser:
+    - 14844
+    - 14078
+    - 14056
+    - 13767
+    TopPagesByPreviousTopPages:
+    - 25618
+    - 25502
+    - 25935
+    - 25815
+    TopReferringDomains:
+    - 12462
+    - 12771
+    - 12529
+    - 12827
+4:
+  dataLoad:
+  - 32538
+  - 20874
+  - 20797
+  - 20861
+  execution:
+    Pageviews:
+    - 3902
+    - 2364
+    - 2364
+    - 2407
+    Revenue:
+    - 2166
+    - 2318
+    - 1784
+    - 2165
+    RevenueFromTopReferringDomains:
+    - 14102
+    - 15378
+    - 14791
+    - 14171
+    RevenueFromTopReferringDomainsFirstVisitGoogle:
+    - 15345
+    - 14866
+    - 14838
+    - 15190
+    TopPages:
+    - 3343
+    - 2958
+    - 3294
+    - 2951
+    TopPagesByBrowser:
+    - 14810
+    - 13916
+    - 14565
+    - 13491
+    TopPagesByPreviousTopPages:
+    - 29417
+    - 29002
+    - 30007
+    - 28749
+    TopReferringDomains:
+    - 8684
+    - 5482
+    - 5489
+    - 5457
+5:
+  dataLoad:
+  - 30308
+  - 26417
+  - 25068
+  - 24422
+  execution:
+    Pageviews:
+    - 2351
+    - 2448
+    - 2181
+    - 2234
+    Revenue:
+    - 2217
+    - 2096
+    - 2026
+    - 2318
+    RevenueFromTopReferringDomains:
+    - 14212
+    - 15435
+    - 16081
+    - 14699
+    RevenueFromTopReferringDomainsFirstVisitGoogle:
+    - 15422
+    - 15432
+    - 15319
+    - 14813
+    TopPages:
+    - 3351
+    - 2700
+    - 3021
+    - 3056
+    TopPagesByBrowser:
+    - 14967
+    - 14167
+    - 14527
+    - 14466
+    TopPagesByPreviousTopPages:
+    - 32183
+    - 31361
+    - 32234
+    - 32547
+    TopReferringDomains:
+    - 4863
+    - 4597
+    - 4568
+    - 4505
+6:
+  dataLoad:
+  - 25803
+  - 20878
+  - 19753
+  - 21422
+  execution:
+    Pageviews:
+    - 2877
+    - 2475
+    - 2341
+    - 3082
+    Revenue:
+    - 2053
+    - 2030
+    - 2277
+    - 2192
+    RevenueFromTopReferringDomains:
+    - 16453
+    - 16533
+    - 16408
+    - 16653
+    RevenueFromTopReferringDomainsFirstVisitGoogle:
+    - 16784
+    - 17143
+    - 15908
+    - 16329
+    TopPages:
+    - 3693
+    - 3238
+    - 3088
+    - 2857
+    TopPagesByBrowser:
+    - 14224
+    - 14464
+    - 14321
+    - 14186
+    TopPagesByPreviousTopPages:
+    - 35879
+    - 36566
+    - 36126
+    - 36995
+    TopReferringDomains:
+    - 6336
+    - 6677
+    - 6399
+    - 6460
