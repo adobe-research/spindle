@@ -4,10 +4,11 @@
 
 Analytics platforms such as [Adobe Analytics][adobe-analytics]
 are growing to process petabytes of data in real-time.
-Delivering responsive interfaces over this much data is difficult,
+Delivering responsive interfaces querying this amount of data is difficult,
 and there are many distributed data processing technologies such
 as [Hadoop MapReduce][mapreduce], [Apache Spark][spark],
-[Apache Drill][drill], and [Cloudera Impala][impala].
+[Apache Drill][drill], and [Cloudera Impala][impala]
+to build low-latency query systems.
 
 Spark is part of the [Apache Software Foundation][apache]
 and claims speedups up to 100x faster than Hadoop for in-memory
