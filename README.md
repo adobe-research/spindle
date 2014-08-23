@@ -192,9 +192,10 @@ specified columnar subset.
 For a more detailed introduction to Thrift,
 see [Thrift: The Missing Guide][thrift-guide].
 
-The entire Adobe Analytics schema cannot be published,
-but [AnalyticsData.thrift][AnalyticsData.thrift] provides
-a schema with fields common to every analytics events.
+The entire Adobe Analytics schema cannot be published.
+The open source release of Spindle uses
+[AnalyticsData.thrift][AnalyticsData.thrift],
+which contains 10 non-proprietary fields for web analytics.
 
 Columns postprocessed into the data after collection have the `post_`
 prefix along with `visit_referrer` and `first_hit_referrer`.
