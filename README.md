@@ -167,6 +167,34 @@ The Spark context supports multi-threading and offers a
 `FIFO` and `FAIR` scheduling options for concurrent queries.
 Spindle uses Spark's `FAIR` scheduling option to minimize overall latency.
 
+## Future Work - Utilizing Spark job servers or resource managers.
+Spindle's architecture can likely be improved on larger clusters by
+utilizing a job server or resource manager to
+maintain a pool of Spark contexts for query execution.
+[Ooyala's spark-jobserver][spark-jobserver] provides
+a RESTful interface for submitting Spark jobs that Spindle could
+interface with instead of interfacing with Spark directly.
+[YARN][yarn] can also be used to manage Spark's
+resources on a cluster, as described in [this article][spark-yarn].
+
+However, allocating resources on the cluster raises additional
+questions and engineering work that Spindle can address in future work.
+Spindle's current architecture coincides HDFS and Spark workers
+on the same nodes, minimizing the network traffic required
+to load data.
+How much will the performance degrade if the resource manager
+allocates some subset of Spark workers that don't
+coincide with any of the HDFS data being accessed?
+
+Furthermore, how would a production-ready caching policy
+on a pool of Spark Contexts look?
+What if many queries are being submitted and executed on
+different Spark Contexts that use the same data?
+Scheduling the queries on the same Spark Context and
+caching the data between query executions would substantially
+increase the performance, but how should the scheduler
+be informed of this information?
+
 ## Data Format
 Adobe Analytics events data have at least 250 columns,
 and sometimes significantly more than 250 columns.
@@ -492,3 +520,7 @@ under the Apache 2 license, and a copy is provided in `LICENSE`.
 [terminus]: https://github.com/rlamana/Terminus
 [beamer-snippets]: https://github.com/bamos/beamer-snippets
 [bootstrap-daterangepicker]: https://github.com/dangrossman/bootstrap-daterangepicker
+
+[spark-jobserver]: https://github.com/ooyala/spark-jobserver
+[yarn]: http://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/YARN.html
+[spark-yarn]: http://blog.cloudera.com/blog/2014/05/apache-spark-resource-management-and-yarn-app-models/
