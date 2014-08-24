@@ -43,6 +43,12 @@ storage format on the
 
 This repo contains the Spindle implementation and benchmarking scripts
 to observe Spindle's performance while exploring Spark's tuning options.
+Spindle's goal is to process petabytes of data on thousands of nodes,
+but the current implementation has not yet been tested at this scale.
+Our current experimental results use six nodes,
+each with 24 cores and 21g of Spark memory, to query 13.1GB of analytics data.
+The trends show that further Spark tuning and optimizations should
+be investigated before attempting larger scale deployments.
 
 # Demo
 We used Spindle to generate static webpages that are hosted
