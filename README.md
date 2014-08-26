@@ -337,7 +337,7 @@ modify `config.yaml` to have your server configurations,
 and build the application with `ss-a`, send the JAR to your cluster
 with `ss-sy`, and start Spindle with `ss-st`.
 
-# Benchmarking Results
+# Experimental Results
 All experiments leverage a homogeneous six node production cluster
 of HP ProLiant DL360p Gen8 blades.
 Each node has 32GB of DDR3 memory at 1333MHz,
@@ -353,6 +353,39 @@ in Parquet.
 
 The YAML formatted results, scripts, and resulting figures
 are in the [benchmark-scripts][benchmark-scripts] directory.
+
+## Scaling HDFS and Spark workers.
+Predicting the optimal resource allocation to minimize query latency for
+distributed applications is difficult. No production software can accurately
+predict the optimal number of Spark and HDFS nodes for a given application.
+This experiment observes the execution time of queries as the number of Spark
+and HDFS workers is increased. We manually scale and rebalance the HDFS data.
+
+The following figure shows the time to load all columns the queries
+use for the week of data as the Spark and HDFS workers are scaled. The data is
+loaded by caching the Spark RDD and performing a null operation on them, such
+as `rdd.cache.foreach{x` =>{}}. The downward trend of the data load times
+indicate that using more Spark or HDFS workers will decrease the time to load
+data.
+
+![](https://raw.githubusercontent.com/adobe-research/spindle/master/benchmark-scripts/scaling/dataLoad.png)
+
+The following table shows the execution time of the queries
+with cached data when scaling the HDFS and Spark workers.
+The bold data indicates where adding a
+Spark and HDFS worker hurts performance. The surprising results show that
+adding a single Spark or HDFS worker commonly hurts query performance, and
+interestingly, no query experiences minimal execution time when using all 6
+workers. Our future work is to further experiment by tuning Spark to understand
+the performance degradation, which might be caused by network traffic or
+imbalanced workloads.
+
+Q2 and Q3 are similar queries and consequently have similar performance as
+scaling the Spark and HDFS workers, but has an anomaly when using 3 workers
+where Q2 executes in 17.10s and Q3 executes in 55.15s. Q6’s execution time
+increases by 10.67 seconds between three and six Spark and HDFS workers.
+
+![](https://github.com/adobe-research/spindle/raw/master/images/scaling-spark-hdfs.png)
 
 ## Intermediate data partitioning.
 Spark cannot optimize the number of records in the partitions
@@ -457,6 +490,11 @@ small scale of six nodes.
 The slowdowns for two concurrent queries indicate further query optimizations
 could better balance the work between all Spark workers and
 likely result in better query execution time.
+
+# Contributing and Development Status
+Spindle is not currently under active development by Adobe.
+However, we are happy to review and respond to issues,
+questions, and pull requests.
 
 # License
 Bundled applications are copyright their respective owners.
