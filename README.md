@@ -364,7 +364,7 @@ and HDFS workers is increased. We manually scale and rebalance the HDFS data.
 The following figure shows the time to load all columns the queries
 use for the week of data as the Spark and HDFS workers are scaled. The data is
 loaded by caching the Spark RDD and performing a null operation on them, such
-as `rdd.cache.foreach{x` =>{}}. The downward trend of the data load times
+as `rdd.cache.foreach{x =>{}}`. The downward trend of the data load times
 indicate that using more Spark or HDFS workers will decrease the time to load
 data.
 
