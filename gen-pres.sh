@@ -75,7 +75,7 @@ EOF
 
 cd slides
 rm *.png
-gs -dBATCH -dNOPAUSE -sDEVICE=png16m -r200 \
+gs -dBATCH -dNOPAUSE -sDEVICE=png16m -r350 \
    -sOutputFile=slide-%03d.png cloudcom-pres-handout.pdf
 ./gen-html.py >> ../pres.html
 cd ..
