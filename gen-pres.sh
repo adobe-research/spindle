@@ -71,6 +71,16 @@ body {
   <div class="container">
    <div class="hero-unit">
      <center>
+     <a href="/slides/cloudcom-pres-full.pdf">Full Presentation</a> |
+     <a href="/slides/cloudcom-pres-handout.pdf">Handout</a>
+     </center>
+
+     Spindle will be presented at
+     <a href="http://2014.cloudcom.org">CloudCom 2014</a>.
+     The LaTeX source of these slides is available from
+     <a href="https://github.com/adobe-research/spindle/tree/master/cloudcom-2014-presentation">here</a> in the main Spindle repository and uses code portions
+     from <a href="https://github.com/bamos/beamer-snippets">bamos/beamer-snippets</a>.
+     <center>
 EOF
 
 cd slides
