@@ -565,7 +565,8 @@
 \subsection{Queries.}
 \newcommand{\nameMapsRow}[2]{#2 & #1 \\}
 \newcommand{\mt}{\ensuremath{\times}}
-\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
+\frame{\frametitle{\insertsection}
+  \framesubtitle{\insertsubsection~Demo at \url{http://adobe-research.github.io/spindle}}
 \begin{table}[hb]
   \centering
   \tiny
@@ -617,7 +618,8 @@
 
 \iffalse
 \newcommand{\queryOpRow}[2]{#1 & #2 \\}
-\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
+\frame{\frametitle{\insertsection}
+  \framesubtitle{\insertsubsection~Demo at \url{http://adobe-research.github.io/spindle}}
   \begin{itemize}
     \item<+-> Table below shows high-level Spark operations.
     \item<+-> Italicized operations indicate operations where partitioning is
@@ -643,7 +645,9 @@
 \fi
 
 \begin{frame}[fragile]
-  \frametitle{\insertsection}\framesubtitle{\insertsubsection}
+  \frametitle{\insertsection}
+  \framesubtitle{\insertsubsection~Demo at \url{http://adobe-research.github.io/spindle}}
+
   \begin{lstlisting}[language=scala]
 case class QueryConf(
   sc: SparkContext, data: Array[RDD[SiteCatalyst]], profile: Boolean,
@@ -673,11 +677,8 @@ object TopPages extends Query {|\pause|
 \end{frame}
 
 
-\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
-  {\footnotesize
-    Online demo is available at \url{http://adobe-research.github.io/spindle/}
-  }
-  \pause
+\frame{\frametitle{\insertsection}
+  \framesubtitle{\insertsubsection}
   \begin{center}
     \includegraphics[width=0.8\textwidth]{top-pages-by-browser.png}
   \end{center}
