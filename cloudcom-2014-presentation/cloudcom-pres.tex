@@ -90,11 +90,11 @@
 \begin{document}
 
 \title[Spindle, CloudCom 2014]{
-  Spindle - CloudCom 2014\\
-  {\small Next-Generation Query Processing
-    for Adobe Marketing Cloud}
+  {\LARGE Spindle - CloudCom 2014}\\
+  {\small Performance study of Spindle, a web analytics\\[-3mm]
+    query engine implemented in Spark}
 }
-\author[{\it Amos} and Tompkins, Adobe Research]{
+\author[Amos and Tompkins, Adobe Research]{
   {\bf Brandon Amos$^*$} and David Tompkins, {\bf Adobe Research } \\
   {\footnotesize
     $^*$Adobe summer intern, Ph.D. Student at
@@ -110,13 +110,24 @@
 \section{Motivation}
 \frame{\frametitle{\insertsection}
   \begin{itemize}
-    \item<+-> Adobe Marketing Cloud delivers marketers a web analytics platform
-      with subsecond query response time.
-    \item<+-> Trending open source technologies such as
-      {\it Apache Spark}, {\it Cloudera Impala}, and {\it Google Dremel}
-      offer a general purpose alternative to in-house software at Adobe.
+    \item Adobe Marketing Cloud offers web analytics.
+  \end{itemize}
+  \pause
+  \begin{center}
+    \includegraphics[width=0.8\textwidth]{top-pages-by-browser.png}
+  \end{center}
+}
+
+\frame{\frametitle{\insertsection}
+  \begin{itemize}
+    \item<+-> Trending general-purpose distributed data processing engines.
+      \begin{itemize}
+      \item<+-> Apache Spark
+      \item<+-> Cloudera Impala
+      \item<+-> Google Dremel
+      \end{itemize}
     \item<+-> {\bf Spindle} is an early investigation of the feasibility
-      of Apache Spark for web analytics.
+      of Apache Spark for web analytics
   \end{itemize}
 }
 
@@ -130,7 +141,8 @@
 }
 
 
-\section{System Architecture}
+\section{Spindle Architecture}
+\iffalse
 \subsection{Mini-Project: Deploying Spark.}
 \frame{\frametitle{\insertsection}
   \framesubtitle{
@@ -293,24 +305,13 @@
   }
   \end{center}
 }
+\fi
 
-\subsection{Requests and responses with Spray.}
+\subsection{Overview.}
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
   {\bf Motivation:} How can we use expose our analytics engine to other
   components of Adobe's infrastructure?
   \pause
-  \begin{center}
-    \includegraphics[height=1.5cm]{images/spray.png}
-  \end{center}
-  \pause
-  {\bf Solution:} \textit{\textbf{spray} is an open-source toolkit for building
-    REST/HTTP-based integration layers on top of Scala and Akka Actors.
-    Being asynchronous, actor-based, fast, lightweight, modular and
-    testable it's a great way to connect your Scala applications to the world.
-  }
-}
-
-\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
   \begin{center}
   \scalebox{0.65}{
   \begin{tikzpicture}
@@ -355,13 +356,14 @@
     \pause
 
     \node[grayn,below=of queryprocessor] (db)
-      {{\footnotesize HDFS/Parquet/Thrift}};
+      {{\footnotesize Data (HDFS/Parquet)}};
     \draw[tofrom] (queryprocessor) -- (db);
   \end{tikzpicture}
   }
   \end{center}
 }
 
+\iffalse
 \subsection{Mini-Project: Columnar data store.}
 \frame{\frametitle{\insertsection}
   \framesubtitle{
@@ -534,7 +536,6 @@
   \end{center}
 }
 
-\iffalse
 \subsection{Partitioning.}
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
   \begin{itemize}
@@ -573,43 +574,50 @@
   \begin{tabular}{rl}
     Shorthand & Name \\ \hline
     \nameMapsRow{Pageviews}{Q0}
+    \pause
     \nameMapsRow{Revenue}{Q1}
+    \pause
     \nameMapsRow{RevenueFromTopReferringDomains}{Q2}
+    \pause
     \nameMapsRow{RevenueFromTopReferringDomainsFirstVisitGoogle}{Q3}
+    \pause
     \nameMapsRow{TopPages}{Q4}
+    \pause
     \nameMapsRow{TopPagesByBrowser}{Q5}
+    \pause
     \nameMapsRow{TopPagesByPreviousTopPages}{Q6}
+    \pause
     \nameMapsRow{TopReferringDomains}{Q7}
+    \pause
   \end{tabular}
 \end{table}
 \bigskip
-\pause
 \begin{table}[ht]
   \centering
   \tiny
   \begin{tabular}{ccccccccc}
   &
-    Q0 &  Q1  &  Q2  &  Q3  &  Q4  &  Q5  &  Q6  &  Q7  \\ \hline
+    Q0 &  Q1  &  Q2  &  Q3  &  Q4  &  Q5  &  Q6  &  Q7  \\ \hline \pause
   post\_pagename &
-   \mt &      &      &      &  \mt &  \mt &  \mt &      \\
+   \mt &      &      &      &  \mt &  \mt &  \mt &      \\ \pause
   user\_agent &
-       &      &      &      &      &  \mt &      &      \\
+       &      &      &      &      &  \mt &      &      \\ \pause
   visit\_referrer &
-       &      &  \mt &  \mt &      &      &      &      \\
+       &      &  \mt &  \mt &      &      &      &      \\ \pause
   post\_visid\_high &
-       &      &  \mt &  \mt &      &      &  \mt &  \mt \\
+       &      &  \mt &  \mt &      &      &  \mt &  \mt \\ \pause
   post\_visid\_low &
-       &      &  \mt &  \mt &      &      &  \mt &  \mt \\
+       &      &  \mt &  \mt &      &      &  \mt &  \mt \\ \pause
   visit\_num &
-       &      &  \mt &  \mt &      &      &  \mt &  \mt \\
+       &      &  \mt &  \mt &      &      &  \mt &  \mt \\ \pause
   visit\_referrer &
-       &      &      &      &      &      &      &  \mt \\
+       &      &      &      &      &      &      &  \mt \\ \pause
   hit\_time\_gmt &
-       &      &      &      &      &      &  \mt &      \\
+       &      &      &      &      &      &  \mt &      \\ \pause
   post\_purchaseid &
-       &  \mt &  \mt &  \mt &      &      &      &      \\
+       &  \mt &  \mt &  \mt &      &      &      &      \\ \pause
   post\_product\_list &
-       &  \mt &  \mt &  \mt &      &      &      &      \\
+       &  \mt &  \mt &  \mt &      &      &      &      \\ \pause
   first\_hit\_referrer &
        &      &      &  \mt &      &      &      &      \\
   \end{tabular}
@@ -644,6 +652,7 @@
 }
 \fi
 
+\iffalse
 \begin{frame}[fragile]
   \frametitle{\insertsection}
   \framesubtitle{\insertsubsection~Demo at \url{http://adobe-research.github.io/spindle}}
@@ -675,10 +684,11 @@ object TopPages extends Query {|\pause|
 }
   \end{lstlisting}
 \end{frame}
+\fi
 
 
 \frame{\frametitle{\insertsection}
-  \framesubtitle{\insertsubsection}
+  \framesubtitle{\insertsubsection~Demo at \url{http://adobe-research.github.io/spindle}}
   \begin{center}
     \includegraphics[width=0.8\textwidth]{top-pages-by-browser.png}
   \end{center}
@@ -687,21 +697,37 @@ object TopPages extends Query {|\pause|
 \subsection{Ad hoc queries.}
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
   \begin{itemize}
-    \item<+-> Spark SQL is an alpha feature in Spark and allows
-      relational queries in SQL to be executed with Spark.
-    \item<+-> SiteCatalyst Parquet on HDFS can be loaded directly into
-      the Spark SQL data types and queried with SQL strings.
+    \item Spark SQL processes relational queries.
   \end{itemize}
-}
-
-\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
+  \pause
   \begin{center}
-    \includegraphics[width=0.9\textwidth]{adhoc.png}
+    \includegraphics[width=0.9\textwidth]{adhoc1.png}
   \end{center}
 }
 
+\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
+  \begin{itemize}
+    \item Spark SQL processes relational queries.
+  \end{itemize}
+  \begin{center}\includegraphics[width=0.9\textwidth]{adhoc2.png}\end{center}
+}
+
+\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
+  \begin{itemize}
+    \item Spark SQL processes relational queries.
+  \end{itemize}
+  \begin{center}\includegraphics[width=0.9\textwidth]{adhoc3.png}\end{center}
+}
+
+\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
+  \begin{itemize}
+    \item Spark SQL processes relational queries.
+  \end{itemize}
+  \begin{center}\includegraphics[width=0.9\textwidth]{adhoc4.png}\end{center}
+}
+
 \section{Empirical Results}
-\subsection{Experimental Data}
+\iffalse
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
   \begin{itemize}
     \item<+-> Query date range is Jan 1, 2014 to Jan 7, 2014, inclusively.
@@ -716,7 +742,6 @@ object TopPages extends Query {|\pause|
   \end{itemize}
 }
 
-\iffalse
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
   \begin{itemize}
     \item<+-> Because 6 workers are being used with 20GB of memory each,
@@ -742,6 +767,7 @@ object TopPages extends Query {|\pause|
 }
 \fi
 
+\iffalse
 \subsection{Ideal number of partitions.}
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
   \begin{itemize}
@@ -777,19 +803,22 @@ object TopPages extends Query {|\pause|
     \end{tabular}
   \end{table}
 }
+\fi
 
 \subsection{Caching.}
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
   \begin{itemize}
-    \item<+-> How much better performance does caching give?
-    \item<+-> Leverage all 6 workers and target 1.5M records in each partition.
-    \item<+-> Sample each point 4 times.
+    \item<+-> Six cluster nodes, Spark and HDFS on each.
+    \item<+-> 13.1GB of data.
+    \item<+-> {\bf Question:} How much better performance does caching give?
   \end{itemize}
 }
 
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
 \begin{figure}[ht]
   \centering
+  Loading data takes around ten seconds. \\
+  \pause
   \includegraphics[width=0.7\textwidth]{results-2014.08.02/caching/caching.pdf}
 \end{figure}
 }
@@ -797,44 +826,40 @@ object TopPages extends Query {|\pause|
 \subsection{Benchmarking concurrent queries.}
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
   \begin{itemize}
-    \item<+-> Multiple users can utilize an analytics system like SiteCatalyst
-      concurrently, and Spark can be used in multithreaded applications.
-    \item<+-> {\bf Research Question:} How much will Spark's performance
+    %\item<+-> Multiple users can utilize an analytics system like SiteCatalyst
+    %  concurrently, and Spark can be used in multithreaded applications.
+    \item How much will Spindle's performance
       degrade if multiple users are utilizing it at the same time?
-    \item<+-> {\bf Solution:} Assume users submit the same query
-      at the same time and observe the average query response time.
+    %\item<+-> {\bf Solution:} Assume users submit the same query
+    %  at the same time and observe the average query response time.
+    %% \item<+-> A Python script using threading manages threads for
+    %%   each number of concurrent queries.
+    %% \item<+-> Consider the example below for 2 threads and 3 repeated
+    %%   queries per thread. The first thread finishes before the second,
+    %%   and remains loaded until the second thread finishes.
+    %%   $t_4^1$ and $t_5^1$ are not used in the average.
+    %% \item<+-> This experiment runs queries on the date range of
+    %%   Jan 1, 2014 to Jan 7, 2014 and each thread calls the query 4 times.
   \end{itemize}
-}
-
-\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
-  \begin{itemize}
-    \item<+-> A Python script using threading manages threads for
-      each number of concurrent queries.
-    \item<+-> Consider the example below for 2 threads and 3 repeated
-      queries per thread. The first thread finishes before the second,
-      and remains loaded until the second thread finishes.
-      $t_4^1$ and $t_5^1$ are not used in the average.
-    \item<+-> This experiment runs queries on the date range of
-      Jan 1, 2014 to Jan 7, 2014 and each thread calls the query 4 times.
-  \end{itemize}
+  \pause
   \begin{center}
   \scalebox{0.75}{
   \begin{tikzpicture}
-    \draw[squig] (0,0) -- (2,0);\node at (2,0.2) {{\footnotesize $t_1^2$}};
-    \draw[squig] (2.2,0) -- (3,0);\node at (3,0.2) {{\footnotesize $t_2^2$}};
-    \draw[squig] (3.2,0) -- (4,0);\node at (4,0.2) {{\footnotesize $t_3^2$}};
-
     \draw[squig] (0,0.5) -- (0.5,0.5);\node at (0.5,0.7)
-      {{\footnotesize $t_1^1$}};
-    \draw[squig] (0.7,0.5) -- (1.5,0.5);\node at (1.5,0.7)
-      {{\footnotesize $t_2^1$}};
-    \draw[squig] (1.7,0.5) -- (2.5,0.5);\node at (2.5,0.7)
-      {{\footnotesize $t_3^1$}};
-    \draw[squig] (2.7,0.5) -- (3.7,0.5);\node at (3.7,0.7)
-      {{\footnotesize \sout{$t_4^1$}}};
-    \draw[squig] (3.9,0.5) -- (5.0,0.5);\node at (5.0,0.7)
-      {{\footnotesize \sout{$t_5^1$}}};
+      {{\footnotesize $t_1^1$}}; \pause
+    \draw[squig] (0,0) -- (2,0);\node at (2,0.2) {{\footnotesize $t_1^2$}}; \pause
 
+    \draw[squig] (0.7,0.5) -- (1.5,0.5);\node at (1.5,0.7)
+      {{\footnotesize $t_2^1$}}; \pause
+    \draw[squig] (1.7,0.5) -- (2.5,0.5);\node at (2.5,0.7)
+      {{\footnotesize $t_3^1$}}; \pause
+
+    \draw[squig] (2.2,0) -- (3,0);\node at (3,0.2) {{\footnotesize $t_2^2$}}; \pause
+
+    \draw[squig] (2.7,0.5) -- (4.0,0.5);\node at (3.7,0.7)
+      {{\footnotesize \sout{$t_4^1$}}}; \pause
+
+    \draw[squig] (3.2,0) -- (4,0);\node at (4,0.2) {{\footnotesize $t_3^2$}}; \pause
     \draw (4,-0.5) -- (4,1);
   \end{tikzpicture}
   }
@@ -842,9 +867,8 @@ object TopPages extends Query {|\pause|
 }
 
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
-  \begin{itemize}
-    \item<+-> Speedups for all queries are similar to the following.
-  \end{itemize}
+  The Spark scheduler efficiently executes concurrent queries.
+  \pause
   \bigskip
   \includegraphics[width=0.5\textwidth]{results-2014.08.02/concurrent/pdf/TopPages.pdf}
   \pause
@@ -880,22 +904,23 @@ object TopPages extends Query {|\pause|
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
   \begin{itemize}
     \item<+-> Spark is a good candidate for real-time analytics processing.
-    \item<+-> Spindle is a research prototype and benchmarkable analytics
-      engine.
-    \item<+-> Spindle's future work is on caching and preprocessing data.
+      \begin{itemize}
+      \item<+-> In-memory caching.
+      \item<+-> Lineage information.
+      \end{itemize}
+    \item<+-> {\bf Spindle} is a prototype benchmarkable analytics engine.
+    \item<+-> Spindle's future work is on data format and preprocessing.
   \end{itemize}
-}
-
-\frame{\frametitle{Questions?}
+  \vspace{4mm}
   \begin{center}
     {\scriptsize
       \begin{tabular}{r|l}
-      {\bf Spindle Project} & \url{http://github.com/adobe-research/spindle} \\
-      {\bf Brandon Amos} & \url{http://github.com/bamos} \\
-      {\bf David Tompkins} & \url{http://github.com/DavidTompkins} \\
+      Spindle Project & \url{http://github.com/adobe-research/spindle} \\
+      Brandon Amos & \url{http://github.com/bamos} \\
+      David Tompkins & \url{http://github.com/DavidTompkins} \\
       \end{tabular}
     }
-    \includegraphics[width=0.9\textwidth]{spindle-github.png}
+    %% \includegraphics[width=0.9\textwidth]{spindle-github.png}
   \end{center}
 }
 
