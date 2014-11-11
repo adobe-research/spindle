@@ -87,26 +87,26 @@
   \insertshorttitle\hfill%
   \insertframenumber\,/\,\inserttotalframenumber}
 \renewcommand*{\thefootnote}{\fnsymbol{footnote}}
+\beamertemplatenavigationsymbolsempty
+
 \begin{document}
 
 \title[Spindle, CloudCom 2014]{
-  {\LARGE Spindle - CloudCom 2014}\\
-  {\small Performance study of Spindle, a web analytics\\[-3mm]
-    query engine implemented in Spark}
+  {\Large Performance study of Spindle, a web analytics\\[-2mm]
+    query engine implemented in Spark} \\[-3mm]
+  {\small CloudCom 2014}
 }
 \author[Amos and Tompkins, Adobe Research]{
   {\bf Brandon Amos$^*$} and David Tompkins, {\bf Adobe Research } \\
   {\footnotesize
     $^*$Adobe summer intern, Ph.D. Student at
     Carnegie Mellon University.} \\[4mm]
-  {\footnotesize
-    Presentation available online at
-    \url{http://adobe-research.github.io/spindle/pres} \\
-  }
   \vspace*{-5mm}
 }
-\date{2014/12/19}
-\frame{\titlepage}
+\date{December 19, 2014}
+{\setbeamertemplate{footline}{}\setbeamertemplate{headline}{}\frame{\titlepage}}
+\addtocounter{framenumber}{-1}
+
 \section{Motivation}
 \frame{\frametitle{\insertsection}
   \begin{itemize}
@@ -114,12 +114,18 @@
   \end{itemize}
   \pause
   \begin{center}
-    \includegraphics[width=0.8\textwidth]{top-pages-by-browser.png}
+    \begin{tikzpicture}[every node/.style={anchor=north}]
+      \node at (0,0) {\includegraphics[width=1\textwidth]{tpbb1.png}};
+      \pause
+      \node at (0,0) {\includegraphics[width=1\textwidth]{tpbb2.png}};
+    \end{tikzpicture}
   \end{center}
 }
 
 \frame{\frametitle{\insertsection}
   \begin{itemize}
+    \item Adobe Marketing Cloud offers web analytics.
+    \item<+-> Terabytes of data, thousands of servers.
     \item<+-> Trending general-purpose distributed data processing engines.
       \begin{itemize}
       \item<+-> Apache Spark
@@ -132,12 +138,32 @@
 }
 
 \frame{\frametitle{\insertsection}
-  \begin{center}
-  \includegraphics[width=0.8\textwidth]{spark.png}
-  \end{center}
-  \pause
-  {\bf Problem:} Current performance studies do not show
+  \begin{itemize}
+  \item<+-> Ideal Spark features
+    \begin{itemize}
+    \item<+-> In-memory caching
+    \item<+-> Lineage
+    \end{itemize}
+    \pause
+    \begin{center}
+      \scalebox{0.7}{
+        \begin{tikzpicture}
+          \node[bn] (a) {\includegraphics[width=2cm]{hdd.png}};
+          \pause
+          \node[on,right=0.5cm of a] (b) {\includegraphics[width=2cm]{memory.png}};
+          \draw[to] (a) -- (b);
+          \pause
+          \node[rn,above right=-0.4cm and 0.5cm of b] (d) {Browser Query};
+          \draw[to] (b) -- (d);
+          \pause
+          \node[rn,below right=-0.4cm and 0.5cm of b] (c) {Top Pages Query};
+          \draw[to] (b) -- (c);
+        \end{tikzpicture}
+      }
+    \end{center}
+  \item<+-> {\bf Problem:} Current performance studies do not show
   Spark's performance for interactive web analytics application.
+  \end{itemize}
 }
 
 
@@ -309,8 +335,7 @@
 
 \subsection{Overview.}
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
-  {\bf Motivation:} How can we use expose our analytics engine to other
-  components of Adobe's infrastructure?
+  What is Spindle?
   \pause
   \begin{center}
   \scalebox{0.65}{
@@ -318,9 +343,10 @@
     \node[bn] (query) {{\tt http://server/query}};
     \pause
 
-    \node[greenn,right=of query] (spray) {
-      \includegraphics[height=.3cm]{images/spray.png}
-    };
+    \node[left=of query,align=left] () {{\bf Parameters:}\\ Date Range\\Spark Tuning Options};
+    \pause
+
+    \node[greenn,right=of query] (spray) {REST API};
     \node at (1.9cm,1.1cm) {{\footnotesize HTTP Request}};
     \node at (1.7cm,-1.2cm)
       {{\footnotesize HTTP Response}\\{\footnotesize (HTML or text)}};
@@ -328,36 +354,18 @@
     \draw[to] (spray) edge [bend left] (query);
     \pause
 
-    \draw[squig] (3.4cm,-0.6cm) -- (3.4cm,-1.5cm);
-    \draw[squig] (3.9cm,-0.6cm) -- (3.9cm,-1.5cm);
-    \draw[squig] (4.4cm,-0.6cm) -- (4.4cm,-1.5cm);
+    \node[yn,right=of spray] (queryservice) {Query Processor};
+    \draw[tofrom] (spray) -- (queryservice);
     \pause
 
-    \draw[fill=yellow!20] (4.2cm,-1.6cm) rectangle (4.6cm,-0.5cm) {};
-    \draw[squig] (4.4cm,-0.6cm) -- (4.4cm,-1.5cm);
-    \pause
-
-    \node[yn,right=of spray] (queryservice) {QueryService Actor};
-    \node at (5.5cm,1.1cm) {{\footnotesize Spray Request}};
-    \node at (5.7cm,-1.2cm) {{\footnotesize Spray Response} \\
-      {\footnotesize (Future)}};
-    \draw[to] (spray) edge [bend left] (queryservice);
-    \draw[to] (queryservice) edge [bend left] (spray);
-    \pause
-
-    \node[yn,right=of queryservice] (queryprocessor) {QueryProcessor};
-    \draw[to] (queryservice) edge [bend left] (queryprocessor);
-    \draw[to] (queryprocessor) edge [bend left] (queryservice);
-    \pause
-
-    \node[rn,above=of queryprocessor] (sc)
+    \node[rn,above=of queryservice] (sc)
       {{\footnotesize Global Spark Context}};
-    \draw[tofrom] (queryprocessor) -- (sc);
+    \draw[tofrom] (queryservice) -- (sc);
     \pause
 
-    \node[grayn,below=of queryprocessor] (db)
+    \node[grayn,below=of queryservice] (db)
       {{\footnotesize Data (HDFS/Parquet)}};
-    \draw[tofrom] (queryprocessor) -- (db);
+    \draw[tofrom] (queryservice) -- (db);
   \end{tikzpicture}
   }
   \end{center}
@@ -566,11 +574,10 @@
 \subsection{Queries.}
 \newcommand{\nameMapsRow}[2]{#2 & #1 \\}
 \newcommand{\mt}{\ensuremath{\times}}
-\frame{\frametitle{\insertsection}
-  \framesubtitle{\insertsubsection~Demo at \url{http://adobe-research.github.io/spindle}}
+\frame{
 \begin{table}[hb]
   \centering
-  \tiny
+  \scriptsize
   \begin{tabular}{rl}
     Shorthand & Name \\ \hline
     \nameMapsRow{Pageviews}{Q0}
@@ -594,7 +601,7 @@
 \bigskip
 \begin{table}[ht]
   \centering
-  \tiny
+  \scriptsize
   \begin{tabular}{ccccccccc}
   &
     Q0 &  Q1  &  Q2  &  Q3  &  Q4  &  Q5  &  Q6  &  Q7  \\ \hline \pause
@@ -686,29 +693,24 @@ object TopPages extends Query {|\pause|
 \end{frame}
 \fi
 
-
-\frame{\frametitle{\insertsection}
-  \framesubtitle{\insertsubsection~Demo at \url{http://adobe-research.github.io/spindle}}
-  \begin{center}
-    \includegraphics[width=0.8\textwidth]{top-pages-by-browser.png}
-  \end{center}
+\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
+  \begin{itemize}
+  \item Demo: \url{http://adobe-research.github.io/spindle/}
+  \end{itemize}
 }
 
 \subsection{Ad hoc queries.}
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
   \begin{itemize}
-    \item Spark SQL processes relational queries.
+  \item Spark SQL processes relational queries.
   \end{itemize}
   \pause
   \begin{center}
-    \begin{tikzpicture}
-      \node at (0,0) {\includegraphics[width=0.9\textwidth]{adhoc1.png}};
-      \pause
-      \node at (0,0) {\includegraphics[width=0.9\textwidth]{adhoc2.png}};
-      \pause
-      \node at (0,0) {\includegraphics[width=0.9\textwidth]{adhoc3.png}};
-      \pause
-      \node at (0,0) {\includegraphics[width=0.9\textwidth]{adhoc4.png}};
+    \begin{tikzpicture}[every node/.style={anchor=north}]
+      \node at (0,0) {\includegraphics[width=1\textwidth]{adhoc1.png}}; \pause
+      \node at (0,0) {\includegraphics[width=1\textwidth]{adhoc2.png}}; \pause
+      \node at (0,0) {\includegraphics[width=1\textwidth]{adhoc3.png}}; \pause
+      \node at (0,0) {\includegraphics[width=1\textwidth]{adhoc4.png}};
     \end{tikzpicture}
   \end{center}
 }
@@ -797,17 +799,33 @@ object TopPages extends Query {|\pause|
   \begin{itemize}
     \item<+-> Six cluster nodes, Spark and HDFS on each.
     \item<+-> 13.1GB of data.
-    \item<+-> {\bf Question:} How much better performance does caching give?
+    \item<+-> {\bf Question:} How does caching in-memory improve performance?
   \end{itemize}
 }
 
-\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
-\begin{figure}[ht]
+\frame{
   \centering
-  Loading data takes around ten seconds. \\
-  \pause
-  \includegraphics[width=0.7\textwidth]{results-2014.08.02/caching/caching.pdf}
-\end{figure}
+  \begin{tikzpicture}[every node/.style={anchor=south west}]
+    \node at (0,0)(){\includegraphics[width=1\textwidth]{results-2014.08.02/caching/caching.pdf}};
+    \fill[white] (0,0) rectangle (10,7.45) {};
+    \pause
+    \node at (0,0)(){\includegraphics[width=1\textwidth]{results-2014.08.02/caching/caching.pdf}};
+    \fill[white] (1.4,0.95) rectangle (10,7.45) {};
+    \pause
+    \node at (0,0)(){\includegraphics[width=1\textwidth]{results-2014.08.02/caching/caching.pdf}};
+    \fill[white] (1.4,0.95) rectangle (11,6) {};
+    \fill[white] (6,6) rectangle (9,7) {};
+    \pause
+    \node at (0,0)(){\includegraphics[width=1\textwidth]{results-2014.08.02/caching/caching.pdf}};
+    \fill[white] (3.5,0.95) rectangle (5.5,6) {};
+    \fill[white] (6.5,0.95) rectangle (8.6,6) {};
+    \fill[white] (6,6) rectangle (9,7) {};
+    \pause
+    \node at (0,0)(){\includegraphics[width=1\textwidth]{results-2014.08.02/caching/caching.pdf}};
+    \fill[white] (7.5,0.95) rectangle (8.6,7) {};
+    \pause
+    \node at (0,0)(){\includegraphics[width=1\textwidth]{results-2014.08.02/caching/caching.pdf}};
+  \end{tikzpicture}
 }
 
 \subsection{Benchmarking concurrent queries.}
@@ -815,8 +833,10 @@ object TopPages extends Query {|\pause|
   \begin{itemize}
     %\item<+-> Multiple users can utilize an analytics system like SiteCatalyst
     %  concurrently, and Spark can be used in multithreaded applications.
-    \item How much will Spindle's performance
+    \item<+-> How much will Spindle's performance
       degrade if multiple users are utilizing it at the same time?
+    \item<+-> Concurrently call a single query on the same data.
+    \item<+-> Average the execution time.
     %\item<+-> {\bf Solution:} Assume users submit the same query
     %  at the same time and observe the average query response time.
     %% \item<+-> A Python script using threading manages threads for
@@ -828,39 +848,38 @@ object TopPages extends Query {|\pause|
     %% \item<+-> This experiment runs queries on the date range of
     %%   Jan 1, 2014 to Jan 7, 2014 and each thread calls the query 4 times.
   \end{itemize}
-  \pause
-  \begin{center}
-  \scalebox{0.75}{
-  \begin{tikzpicture}
-    \draw[squig] (0,0.5) -- (0.5,0.5);\node at (0.5,0.7)
-      {{\footnotesize $t_1^1$}}; \pause
-    \draw[squig] (0,0) -- (2,0);\node at (2,0.2) {{\footnotesize $t_1^2$}}; \pause
+}
 
-    \draw[squig] (0.7,0.5) -- (1.5,0.5);\node at (1.5,0.7)
-      {{\footnotesize $t_2^1$}}; \pause
-    \draw[squig] (1.7,0.5) -- (2.5,0.5);\node at (2.5,0.7)
-      {{\footnotesize $t_3^1$}}; \pause
-
-    \draw[squig] (2.2,0) -- (3,0);\node at (3,0.2) {{\footnotesize $t_2^2$}}; \pause
-
-    \draw[squig] (2.7,0.5) -- (4.0,0.5);\node at (3.7,0.7)
-      {{\footnotesize \sout{$t_4^1$}}}; \pause
-
-    \draw[squig] (3.2,0) -- (4,0);\node at (4,0.2) {{\footnotesize $t_3^2$}}; \pause
-    \draw (4,-0.5) -- (4,1);
-  \end{tikzpicture}
+\newcommand{\revealConcurrent}[1]{
+  \frame{
+    \begin{tikzpicture}[every node/.style={anchor=south west}]
+      \node at (0,0)(){\includegraphics[width=\textwidth]{#1}};
+      \fill[white] (0,0) rectangle (10,7.45) {};
+      \pause
+      \node at (0,0)(){\includegraphics[width=\textwidth]{#1}};
+      \fill[white] (1.5,0.95) rectangle (10,7.45) {};
+      \pause
+      \node at (0,0)(){\includegraphics[width=\textwidth]{#1}};
+      \fill[white] (1.5,0.95) rectangle (10,6.8) {};
+      \pause
+      \node at (0,0)(){\includegraphics[width=\textwidth]{#1}};
+      \fill[white] (2.5,0.95) rectangle (10,6.8) {};
+      \pause
+      \node at (0,0)(){\includegraphics[width=\textwidth]{#1}};
+      \fill[white] (3.5,0.95) rectangle (10,6.8) {};
+      \pause
+      \node at (0,0)(){\includegraphics[width=\textwidth]{#1}};
+      \fill[white] (7.5,0.95) rectangle (10,6.8) {};
+      \pause
+      \node at (0,0)(){\includegraphics[width=\textwidth]{#1}};
+      \fill[white] (8.5,0.95) rectangle (10,6.8) {};
+      \pause
+      \node at (0,0)(){\includegraphics[width=\textwidth]{#1}};
+    \end{tikzpicture}
   }
-  \end{center}
 }
-
-\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
-  The Spark scheduler efficiently executes concurrent queries.
-  \pause
-  \bigskip
-  \includegraphics[width=0.5\textwidth]{results-2014.08.02/concurrent/pdf/TopPages.pdf}
-  \pause
-  \includegraphics[width=0.5\textwidth]{results-2014.08.02/concurrent/pdf/TopPagesByPreviousTopPages.pdf}
-}
+\revealConcurrent{results-2014.08.02/concurrent/pdf/TopPages.pdf}
+\revealConcurrent{results-2014.08.02/concurrent/pdf/TopPagesByPreviousTopPages.pdf}
 
 \iffalse
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
@@ -891,13 +910,18 @@ object TopPages extends Query {|\pause|
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
   \begin{itemize}
     \item<+-> Spark is a good candidate for real-time analytics processing.
+      %% \begin{itemize}
+      %% \item<+-> In-memory caching.
+      %% \item<+-> Lineage information.
+      %% \end{itemize}
+    \item<+-> {\bf Spindle} is an open-source prototype analytics processing engine.
       \begin{itemize}
-      \item<+-> In-memory caching.
-      \item<+-> Lineage information.
+      \item<+-> Sample set of web analytics queries.
+      \item<+-> REST-based interface to tune parameters.
       \end{itemize}
-    \item<+-> {\bf Spindle} is a prototype benchmarkable analytics engine.
-    \item<+-> Spindle's future work is on data format and preprocessing.
+    \item<+-> Spindle's future work is on preprocessing.
   \end{itemize}
+  \pause
   \vspace{4mm}
   \begin{center}
     {\scriptsize
