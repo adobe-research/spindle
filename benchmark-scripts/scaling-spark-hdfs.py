@@ -36,7 +36,9 @@ rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
 rc('text', usetex=True)
 
 import seaborn as sns
+sns.set(style=sns.axes_style("white"))
 sns.set_palette("husl",n_colors=10)
+sns.set_style("ticks", {"xtick.minor.size": 6, "ytick.minor.size": 6})
 
 scHost = "localhost"
 scPort = 8605
@@ -189,6 +191,7 @@ def printSpeedups(data, data_dir):
   ax.legend(labels,loc='center left',bbox_to_anchor=(1,0.5))
   ax.set_xlabel("Number of Spark and HDFS Workers")
   ax.set_ylabel("Normalized Execution Time")
+  ax.grid(b=False)
   plt.xticks((3,4,5,6))
   plt.savefig(data_dir+"/scaling/scalingWorkers.pdf")
   plt.savefig(data_dir+"/scaling/scalingWorkers.png")
