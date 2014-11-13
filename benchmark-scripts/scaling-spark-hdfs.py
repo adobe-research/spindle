@@ -193,6 +193,7 @@ def printSpeedups(data, data_dir):
   ax.set_ylabel("Normalized Execution Time")
   ax.grid(b=False)
   plt.xticks((3,4,5,6))
+  plt.ylim((0,1.6))
   plt.savefig(data_dir+"/scaling/scalingWorkers.pdf")
   plt.savefig(data_dir+"/scaling/scalingWorkers.png")
 
