@@ -1,5 +1,6 @@
 # Spindle
 
+[CloudCom 2014 Presentation](http://adobe-research.github.io/spindle/pres)
 ![](https://github.com/adobe-research/spindle/raw/master/images/architecture.png)
 
 Analytics platforms such as [Adobe Analytics][adobe-analytics]
@@ -369,6 +370,7 @@ indicate that using more Spark or HDFS workers will decrease the time to load
 data.
 
 ![](https://raw.githubusercontent.com/adobe-research/spindle/master/benchmark-scripts/scaling/dataLoad.png)
+![](https://raw.githubusercontent.com/adobe-research/spindle/master/benchmark-scripts/scaling/scalingWorkers.png)
 
 The following table shows the execution time of the queries
 with cached data when scaling the HDFS and Spark workers.
