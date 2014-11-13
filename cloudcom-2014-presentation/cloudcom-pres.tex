@@ -139,12 +139,13 @@
 
 \frame{\frametitle{\insertsection}
   \begin{itemize}
-  \item<+-> Ideal Spark features
+  \item<+-> Important Spark features
     \begin{itemize}
     \item<+-> In-memory caching
     \item<+-> Lineage
     \end{itemize}
-    \pause
+    \iffalse
+    %\pause
     \begin{center}
       \scalebox{0.7}{
         \begin{tikzpicture}
@@ -161,6 +162,7 @@
         \end{tikzpicture}
       }
     \end{center}
+    \fi
   \item<+-> {\bf Problem:} Current performance studies do not show
   Spark's performance for interactive web analytics application.
   \end{itemize}
@@ -471,6 +473,10 @@
   \end{center}
 }
 
+\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
+  TODO: Query processor
+}
+
 \subsection{Simple caching policy.}
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
   \begin{itemize}
@@ -581,50 +587,48 @@
   \begin{tabular}{rl}
     Shorthand & Name \\ \hline
     \nameMapsRow{Pageviews}{Q0}
-    \pause
     \nameMapsRow{Revenue}{Q1}
-    \pause
     \nameMapsRow{RevenueFromTopReferringDomains}{Q2}
-    \pause
     \nameMapsRow{RevenueFromTopReferringDomainsFirstVisitGoogle}{Q3}
-    \pause
     \nameMapsRow{TopPages}{Q4}
-    \pause
     \nameMapsRow{TopPagesByBrowser}{Q5}
-    \pause
     \nameMapsRow{TopPagesByPreviousTopPages}{Q6}
-    \pause
     \nameMapsRow{TopReferringDomains}{Q7}
-    \pause
   \end{tabular}
 \end{table}
-\bigskip
+\medskip
+\pause
+\begin{center}
+{\bf 250 total columns}
+\end{center}
+\medskip
+\pause
 \begin{table}[ht]
   \centering
   \scriptsize
   \begin{tabular}{ccccccccc}
   &
-    Q0 &  Q1  &  Q2  &  Q3  &  Q4  &  Q5  &  Q6  &  Q7  \\ \hline \pause
+    Q0 &  Q1  &  Q2  &  Q3  &  Q4  &  Q5  &  Q6  &  Q7  \\ \hline
   post\_pagename &
-   \mt &      &      &      &  \mt &  \mt &  \mt &      \\ \pause
+   \mt &      &      &      &  \mt &  \mt &  \mt &      \\
   user\_agent &
-       &      &      &      &      &  \mt &      &      \\ \pause
+       &      &      &      &      &  \mt &      &      \\
   visit\_referrer &
-       &      &  \mt &  \mt &      &      &      &      \\ \pause
+       &      &  \mt &  \mt &      &      &      &      \\
   post\_visid\_high &
-       &      &  \mt &  \mt &      &      &  \mt &  \mt \\ \pause
+       &      &  \mt &  \mt &      &      &  \mt &  \mt \\
   post\_visid\_low &
-       &      &  \mt &  \mt &      &      &  \mt &  \mt \\ \pause
+       &      &  \mt &  \mt &      &      &  \mt &  \mt \\
   visit\_num &
-       &      &  \mt &  \mt &      &      &  \mt &  \mt \\ \pause
+       &      &  \mt &  \mt &      &      &  \mt &  \mt \\
   visit\_referrer &
-       &      &      &      &      &      &      &  \mt \\ \pause
+       &      &      &      &      &      &      &  \mt \\
   hit\_time\_gmt &
-       &      &      &      &      &      &  \mt &      \\ \pause
+       &      &      &      &      &      &  \mt &      \\
   post\_purchaseid &
-       &  \mt &  \mt &  \mt &      &      &      &      \\ \pause
+       &  \mt &  \mt &  \mt &      &      &      &      \\
   post\_product\_list &
-       &  \mt &  \mt &  \mt &      &      &      &      \\ \pause
+       &  \mt &  \mt &  \mt &      &      &      &      \\
   first\_hit\_referrer &
        &      &      &  \mt &      &      &      &      \\
   \end{tabular}
@@ -693,11 +697,7 @@ object TopPages extends Query {|\pause|
 \end{frame}
 \fi
 
-\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
-  \begin{itemize}
-  \item Demo: \url{http://adobe-research.github.io/spindle/}
-  \end{itemize}
-}
+%TODO: Archival data.
 
 \subsection{Ad hoc queries.}
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
@@ -797,8 +797,8 @@ object TopPages extends Query {|\pause|
 \subsection{Caching.}
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
   \begin{itemize}
-    \item<+-> Six cluster nodes, Spark and HDFS on each.
-    \item<+-> 13.1GB of data.
+    \item<+-> Six cluster nodes (32 GB memory each), Spark and HDFS on each.
+    \item<+-> 13.1GB of data, 1 week, 1 customer.
     \item<+-> {\bf Question:} How does caching in-memory improve performance?
   \end{itemize}
 }
@@ -806,12 +806,6 @@ object TopPages extends Query {|\pause|
 \frame{
   \centering
   \begin{tikzpicture}[every node/.style={anchor=south west}]
-    \node at (0,0)(){\includegraphics[width=1\textwidth]{results-2014.08.02/caching/caching.pdf}};
-    \fill[white] (0,0) rectangle (10,7.45) {};
-    \pause
-    \node at (0,0)(){\includegraphics[width=1\textwidth]{results-2014.08.02/caching/caching.pdf}};
-    \fill[white] (1.4,0.95) rectangle (10,7.45) {};
-    \pause
     \node at (0,0)(){\includegraphics[width=1\textwidth]{results-2014.08.02/caching/caching.pdf}};
     \fill[white] (1.4,0.95) rectangle (11,6) {};
     \fill[white] (6,6) rectangle (9,7) {};
@@ -835,8 +829,8 @@ object TopPages extends Query {|\pause|
     %  concurrently, and Spark can be used in multithreaded applications.
     \item<+-> How much will Spindle's performance
       degrade if multiple users are utilizing it at the same time?
-    \item<+-> Concurrently call a single query on the same data.
-    \item<+-> Average the execution time.
+    \item<+-> Concurrently call the same query on the same data.
+    \item<+-> Average execution times.
     %\item<+-> {\bf Solution:} Assume users submit the same query
     %  at the same time and observe the average query response time.
     %% \item<+-> A Python script using threading manages threads for
@@ -854,14 +848,9 @@ object TopPages extends Query {|\pause|
   \frame{
     \begin{tikzpicture}[every node/.style={anchor=south west}]
       \node at (0,0)(){\includegraphics[width=\textwidth]{#1}};
-      \fill[white] (0,0) rectangle (10,7.45) {};
-      \pause
-      \node at (0,0)(){\includegraphics[width=\textwidth]{#1}};
-      \fill[white] (1.5,0.95) rectangle (10,7.45) {};
-      \pause
-      \node at (0,0)(){\includegraphics[width=\textwidth]{#1}};
       \fill[white] (1.5,0.95) rectangle (10,6.8) {};
       \pause
+      \iffalse
       \node at (0,0)(){\includegraphics[width=\textwidth]{#1}};
       \fill[white] (2.5,0.95) rectangle (10,6.8) {};
       \pause
@@ -874,6 +863,7 @@ object TopPages extends Query {|\pause|
       \node at (0,0)(){\includegraphics[width=\textwidth]{#1}};
       \fill[white] (8.5,0.95) rectangle (10,6.8) {};
       \pause
+      \fi
       \node at (0,0)(){\includegraphics[width=\textwidth]{#1}};
     \end{tikzpicture}
   }
@@ -888,6 +878,8 @@ object TopPages extends Query {|\pause|
       but utilizing more workers should increase performance.
   \end{itemize}
   \bigskip
+  250 total columns
+  \pause
   \begin{table}[ht]
     \centering\tiny
     \begin{tabular}{cccc}
@@ -909,11 +901,7 @@ object TopPages extends Query {|\pause|
 \section{Conclusions}
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
   \begin{itemize}
-    \item<+-> Spark is a good candidate for real-time analytics processing.
-      %% \begin{itemize}
-      %% \item<+-> In-memory caching.
-      %% \item<+-> Lineage information.
-      %% \end{itemize}
+    %\item<+-> Spark is a good candidate for expressing web analytics queries.
     \item<+-> {\bf Spindle} is an open-source prototype analytics processing engine.
       \begin{itemize}
       \item<+-> Sample set of web analytics queries.
@@ -927,6 +915,7 @@ object TopPages extends Query {|\pause|
     {\scriptsize
       \begin{tabular}{r|l}
       Spindle Project & \url{http://github.com/adobe-research/spindle} \\
+      Demo & \url{http://adobe-research.github.io/spindle/} \\
       Brandon Amos & \url{http://github.com/bamos} \\
       David Tompkins & \url{http://github.com/DavidTompkins} \\
       \end{tabular}
