@@ -370,9 +370,8 @@ indicate that using more Spark or HDFS workers will decrease the time to load
 data.
 
 ![](https://raw.githubusercontent.com/adobe-research/spindle/master/benchmark-scripts/scaling/dataLoad.png)
-![](https://raw.githubusercontent.com/adobe-research/spindle/master/benchmark-scripts/scaling/scalingWorkers.png)
 
-The following table shows the execution time of the queries
+The following table and plot show the execution time of the queries
 with cached data when scaling the HDFS and Spark workers.
 The bold data indicates where adding a
 Spark and HDFS worker hurts performance. The surprising results show that
@@ -388,6 +387,7 @@ where Q2 executes in 17.10s and Q3 executes in 55.15s. Q6’s execution time
 increases by 10.67 seconds between three and six Spark and HDFS workers.
 
 ![](https://github.com/adobe-research/spindle/raw/master/images/scaling-spark-hdfs.png)
+![](https://raw.githubusercontent.com/adobe-research/spindle/master/benchmark-scripts/scaling/scalingWorkers.png)
 
 ## Intermediate data partitioning.
 Spark cannot optimize the number of records in the partitions
