@@ -129,211 +129,21 @@
     \item<+-> Trending general-purpose distributed data processing engines.
       \begin{itemize}
       \item<+-> Apache Spark
+        \begin{itemize}
+        \item<+-> Queries implemented with map and reduce functions.
+        \item<+-> In-memory caching.
+        \end{itemize}
       \item<+-> Cloudera Impala
       \item<+-> Google Dremel
       \end{itemize}
-    \item<+-> {\bf Spindle} is an early investigation of the feasibility
-      of Apache Spark for web analytics
+    \item<+-> We present {\bf Spindle}, which is an early investigation of the
+      feasibility of Apache Spark for web analytics
+    \item<+-> {\bf Problem:} How well does Spindle scale for
+      web analytics?
   \end{itemize}
 }
-
-\frame{\frametitle{\insertsection}
-  \begin{itemize}
-  \item<+-> Important Spark features
-    \begin{itemize}
-    \item<+-> In-memory caching
-    \item<+-> Lineage
-    \end{itemize}
-    \iffalse
-    %\pause
-    \begin{center}
-      \scalebox{0.7}{
-        \begin{tikzpicture}
-          \node[bn] (a) {\includegraphics[width=2cm]{hdd.png}};
-          \pause
-          \node[on,right=0.5cm of a] (b) {\includegraphics[width=2cm]{memory.png}};
-          \draw[to] (a) -- (b);
-          \pause
-          \node[rn,above right=-0.4cm and 0.5cm of b] (d) {Browser Query};
-          \draw[to] (b) -- (d);
-          \pause
-          \node[rn,below right=-0.4cm and 0.5cm of b] (c) {Top Pages Query};
-          \draw[to] (b) -- (c);
-        \end{tikzpicture}
-      }
-    \end{center}
-    \fi
-  \item<+-> {\bf Problem:} Current performance studies do not show
-  Spark's performance for interactive web analytics application.
-  \end{itemize}
-}
-
 
 \section{Spindle Architecture}
-\iffalse
-\subsection{Mini-Project: Deploying Spark.}
-\frame{\frametitle{\insertsection}
-  \framesubtitle{
-    \insertsubsection~\href{%
-      http://github.com/adobe-research/spark-cluster-deployment}{%
-      github/adobe-research/spark-cluster-deployment}}
-
-  \begin{itemize}
-    \item<+-> Spark is a trending distributed computing environment
-      and favors in-memory processing.
-    \item<+-> Documentation is currently biased towards writing
-      Spark applications and does not provide best practices for
-      running on a cluster.
-    \item<+-> Spark provides 4 deployment modes: EC2, standalone, Mesos,
-      and YARN.
-    \item<+-> {\bf Motivation:} Spark's standalone cluster mode seems
-      simplest to configure and use, but requires files to be synchronized
-      across the cluster, including the Spark installation directory.
-  \end{itemize} 
-}
-
-\frame{\frametitle{\insertsection}
-  \framesubtitle{
-    \insertsubsection~\href{%
-      http://github.com/adobe-research/spark-cluster-deployment}{%
-      github/adobe-research/spark-cluster-deployment}}
-
-  \begin{itemize}\footnotesize
-    \item<+-> \textit{Open source \textbf{Puppet} is a flexible, customizable
-      framework available under the Apache 2.0 license designed to
-      help system administrators automate the many repetitive tasks
-      they regularly perform.}
-    \item<+-> \textit{\textbf{Fabric} is a Python library and command-line
-      tool for streamlining the use of SSH for application deployment
-      or systems administration tasks.
-    }
-    \item<+-> Organizations have open-sourced Puppet projects for
-      HDFS and Spark on GitHub to manage the server configurations.
-    \item<+-> Use {\bf Fabric} to synchronize and deploy to the servers,
-      which simplifies configuration changes by keeping
-      all configuration locally.
-  \end{itemize}
-}
-
-\frame{\frametitle{\insertsection}
-  \framesubtitle{
-    \insertsubsection~\href{%
-      http://github.com/adobe-research/spark-cluster-deployment}{%
-      github/adobe-research/spark-cluster-deployment}}
-
-  \begin{center}
-  \scalebox{0.5}{
-  \begin{tikzpicture}
-    \draw[fill=gray!20] (-1.7cm,-1.1cm) rectangle (3.9cm,1.3cm) {};
-    \node[bn] (config) {Modify\\Configuration.};
-    \node[on,right=0.5cm of config] (fabric) {Fabric};
-    \node at (0cm,1cm) () {Client Computer};
-    \draw[to] (config) -- (fabric);
-
-    \draw[fill=gray!20] (6cm,-1.1cm) rectangle (12cm,1.3cm) {};
-    \node[greenn] (m) at (7.0cm,0cm) {Master};
-    \node[greenn,right=0.2cm of m] (w1) {Worker};
-    \node[greenn,right=0.2cm of w1] (w2) {Worker};
-    \node at (10.9cm,1cm) {R\&D Cluster};
-
-    \node at (5.4cm,1.7cm) {Bootstrap.};
-    \draw[to] (fabric) edge [bend left] (m);
-    \draw[to] (fabric) edge [bend left] (w1);
-    \draw[to] (fabric) edge [bend left] (w2);
-  \end{tikzpicture}
-  }
-  \pause
-  \scalebox{0.5}{
-  \begin{tikzpicture}
-    \draw[fill=gray!20] (-1.7cm,-1.1cm) rectangle (3.9cm,1.3cm) {};
-    \node[bn] (config) {Modify\\Configuration.};
-    \node[on,right=0.5cm of config] (fabric) {Fabric};
-    \node at (0cm,1cm) () {Client Computer};
-    \draw[to] (config) -- (fabric);
-
-    \draw[fill=gray!20] (6cm,-1.1cm) rectangle (12cm,1.3cm) {};
-    \node[greenn] (m) at (7.0cm,0cm) {Master};
-    \node[yn,right=0.2cm of m] (w1) {Worker};
-    \node[yn,right=0.2cm of w1] (w2) {Worker};
-    \node at (10.9cm,1cm) {R\&D Cluster};
-
-    \node at (5.4cm,1.7cm) {Provision and start Spark and HDFS masters.};
-    \draw[to] (fabric) edge [bend left] (m);
-  \end{tikzpicture}
-  }
-  \pause
-  \scalebox{0.5}{
-  \begin{tikzpicture}
-    \draw[fill=gray!20] (-1.7cm,-1.1cm) rectangle (3.9cm,1.3cm) {};
-    \node[bn] (config) {Modify\\Configuration.};
-    \node[on,right=0.5cm of config] (fabric) {Fabric};
-    \node at (0cm,1cm) () {Client Computer};
-    \draw[to] (config) -- (fabric);
-
-    \draw[fill=gray!20] (6cm,-1.1cm) rectangle (12cm,1.3cm) {};
-    \node[yn] (m) at (7.0cm,0cm) {Master};
-    \node[greenn,right=0.2cm of m] (w1) {Worker};
-    \node[greenn,right=0.2cm of w1] (w2) {Worker};
-    \node at (10.9cm,1cm) {R\&D Cluster};
-
-    \node at (5.4cm,1.7cm) {Provision and start Spark and HDFS workers.};
-    \draw[to] (fabric) edge [bend left] (w1);
-    \draw[to] (fabric) edge [bend left] (w2);
-  \end{tikzpicture}
-  }
-  \end{center}
-}
-
-\frame{\frametitle{\insertsection}
-  \framesubtitle{
-    \insertsubsection~\href{%
-      http://github.com/adobe-research/spark-cluster-deployment}{%
-      github/adobe-research/spark-cluster-deployment}}
-
-  \begin{itemize}\footnotesize
-    \item<+-> {\bf Problem:} Deploying applications to a Spark cluster:
-      \begin{itemize}
-        \item<+-> Application JAR files need to be synchronized across every
-          node on the cluster.
-        \item<+-> Does not provide a way to obtain application output.
-      \end{itemize}
-    \item<+-> {\bf Solution:} Utilize Fabric to deploy, get output,
-      and kill jobs on a Spark cluster.
-  \end{itemize}
-  \bigskip
-  \pause
-  \begin{center}
-  \scalebox{0.6}{
-  \begin{tikzpicture}
-    \draw[fill=gray!20] (-2.5cm,-0.7cm) rectangle (5.6cm,2.2cm) {};
-    \node at (4.5,1.1) (mac) {\includegraphics[width=2cm]{mac.png}};
-    \node at (4.2cm, 1.9cm) {{Client Computer}};
-    \node[bn] (sbt) {sbt};
-    \node[on,above left=0.5cm and -0.5cm of sbt] (lib) {Libraries};
-    \node[on,above right=0.5cm and -0.5cm of sbt] (src) {Scala Sources};
-
-    \draw[to] (lib) -- (sbt);
-    \draw[to] (src) -- (sbt);
-
-    \node[rn,right=of sbt] (jar) {Jar};
-    \draw[to] (sbt) -- (jar);
-
-    \node[yn,right=of jar] (fab) {Fabric};
-    \draw[to] (jar) -- (fab);
-
-    \node[below left=of fab] (s1) {};
-    \node[below=of fab] (s2) {};
-    \node[below right=of fab] (s3) {};
-    \node[below=of fab] (spark) {Spark master and workers.};
-
-    \draw[to] (fab) -- (s1);
-    \draw[to] (fab) -- (s2);
-    \draw[to] (fab) -- (s3);
-  \end{tikzpicture}
-  }
-  \end{center}
-}
-\fi
 
 \subsection{Overview.}
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
@@ -345,8 +155,8 @@
     \node[bn] (query) {{\tt http://server/query}};
     \pause
 
-    \node[left=of query,align=left] () {{\bf Parameters:}\\ Date Range\\Spark Tuning Options};
-    \pause
+    %% \node[left=of query,align=left] () {{\bf Parameters:}\\ Date Range\\Spark Tuning Options};
+    %% \pause
 
     \node[greenn,right=of query] (spray) {REST API};
     \node at (1.9cm,1.1cm) {{\footnotesize HTTP Request}};
@@ -373,209 +183,19 @@
   \end{center}
 }
 
-\iffalse
-\subsection{Mini-Project: Columnar data store.}
-\frame{\frametitle{\insertsection}
-  \framesubtitle{
-    \insertsubsection~\href{%
-      http://github.com/adobe-research/spark-parquet-thrift-example}{%
-      github/adobe-research/spark-parquet-thrift-example}}
-  \begin{itemize}
-    \item<+-> {\bf Motivation:} Adobe's web analytics data is sparse and has
-      approximately 250 columns, and
-      queries implemented in Spindle use less than ten columns.
-    \item<+-> {\bf Solution:} Store the data in columnar store
-      databases separated by day with {\bf Thrift} and
-      {\bf Parquet} on {\bf HDFS}.
-  \end{itemize}
-}
-
-\frame{\frametitle{\insertsection}
-  \framesubtitle{
-    \insertsubsection~\href{%
-      http://github.com/adobe-research/spark-parquet-thrift-example}{%
-      github/adobe-research/spark-parquet-thrift-example}}
-  \begin{itemize}
-    \item<+-> \textit{\textbf{Apache Thrift} allows you to define data
-      types and service interfaces
-      in a simple definition file. Taking that file as input, the compiler
-      generates code to be used to easily build RPC clients and servers that
-      communicate seamlessly across programming languages.
-    }
-    \item<+-> \textit{We created \textbf{Parquet} to make the advantages of
-      compressed, efficient columnar data representation available to any
-      project in the Hadoop ecosystem, regardless of the choice of data
-      processing framework, data model, or programming language.
-    }
-  \end{itemize}
-}
-
-\frame{\frametitle{\insertsection}
-  \framesubtitle{
-    \insertsubsection~\href{%
-      http://github.com/adobe-research/spark-parquet-thrift-example}{%
-      github/adobe-research/spark-parquet-thrift-example}}
-  \begin{itemize}
-    \item<+-> Load each day into a Parquet database on HDFS.
-      \begin{center}
-      \scalebox{0.7}{
-      \begin{tikzpicture}
-        \node[bn] (a) {TSV.};
-        \node[on,right=0.5cm of a] (b) {Thrift Schema.};
-        \node[rn,right=0.5cm of b] (c) {Parquet Columnar Store.};
-        \node[greenn,right=0.5cm of c] (d) {HDFS.};
-        \draw[to] (a) -- (b);
-        \draw[to] (b) -- (c);
-        \draw[to] (c) -- (d);
-      \end{tikzpicture}
-      }
-      \end{center}
-    \item<+-> Retrieve data by specifying column subsets.
-      \begin{center}
-      \scalebox{0.7}{
-      \begin{tikzpicture}
-        \node[grayn] (a) {Column Subset Request.};
-        \node[rn,right=0.5cm of a] (b) {Parquet.};
-        \node[on,right=0.5cm of b] (c) {Thrift.};
-        \node[greenn,below=0.5cm of b] (d) {HDFS.};
-        \draw[to] (a) -- (b);
-        \draw[to] (b) -- (c);
-        \draw[tofrom] (b) -- (d);
-      \end{tikzpicture}
-      }
-      \end{center}
-  \end{itemize}
-}
-
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
   \begin{itemize}
-    \item<+-> Load RDD's into a Scala {\tt Seq}.
-    \item<+-> Only works well for a single timezone of data.
-  \end{itemize}
-  \begin{center}
-  \scalebox{0.7}{
-  \begin{tikzpicture}
-    \node[grayn] (a) {HTTP Request};
-    \node[rn,above right=0.5cm and 0.5cm of a] (b) {Date Range};
-    \node[on,below right=0.5cm and 0.5cm of a] (c) {Query};
-    \node[greenn,below right=0.5cm and 0.5cm of b] (d) {Query Processor};
-    \node[bn,above right=0.5cm and 0.5cm of d] (e)
-      {RDD$_{\rm Day~1}^{\rm Query.cols}$};
-    \node[bn,below right=0.5cm and 0.5cm of d] (f)
-      {RDD$_{\rm Day~N}^{\rm Query.cols}$};
-    \node[right=1.7cm of d] (g) {{\LARGE $\vdots$}};
-    \node[yn,right=of g] (h) {Query.run};
-    \draw[to] (a) -- (b); \draw[to] (a) -- (c); \draw[to] (b) -- (d);
-    \draw[to] (c) -- (d); \draw[to] (d) -- (e); \draw[to] (d) -- (f);
-    \draw[to] (e) -- (h); \draw[to] (f) -- (h);
-  \end{tikzpicture}
-  }
-  \end{center}
-}
-
-\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
-  TODO: Query processor
-}
-
-\subsection{Simple caching policy.}
-\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
-  \begin{itemize}
-    \item<+-> {\bf Motivation:} Loading gigabytes or terabytes of data
-      is a performance bottleneck for many applications, and
-      web analytics queries are likely to be on the same data set.
-    \item<+-> {\bf Possible Solution:}
-      \textit{\textbf{Tachyon} is a memory-centric distributed
-      file system that runs on top of HDFS and caches working
-      set files in memory.
-      Tachyon is Hadoop compatible and can be used with Spark or
-      MapReduce programs without any code change.
-    }
+  \item<+-> Operates on archival data with 250 columns.
+  \item<+-> Data is sparse and queries use <10 columns at a time.
+  \item<+-> Use columnar data format on distributed filesystem.
+  \item<+-> Parameters when processing data.
+    \begin{itemize}
+    \item<+-> Intermediate data partitioning
+    \item<+-> Caching
+    \end{itemize}
   \end{itemize}
 }
 
-\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
-  \begin{center}
-  \includegraphics[width=0.7\textwidth]{tachyon-3.png}
-  \end{center}
-  \pause
-  \begin{itemize}
-    \item<+-> Parquet optimizes disk accesses and only reads specific blocks
-      while loading files and never entire file.
-      However, Tachyon 0.4.1 cannot cache random file block accesses
-      and has the severe limitation of only caching files
-      when all blocks are read.
-    \item<+-> Confirmed by emailing Tachyon's mailing list.
-  \end{itemize}
-}
-
-\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
-  \begin{itemize}
-    \item<+-> {\bf Workaround Solution:} Provide a {\tt cache} parameter
-      that saves RDD's in memory between query calls.
-    \item<+-> This works well for benchmarking single queries on the same data,
-      but requires substantial engineering effort to make production-ready.
-      \begin{itemize}
-        \item<+-> Two queries could be submitted on the same date range that
-          request overlapping, but not identical, column subsets.
-          How should these data sets with partially overlapping values be
-          cached?
-        \item<+-> What if one of the queries is called substantially more times
-          than the others?
-          How can the caching policy recommend the data required by
-          these queries be cached?
-      \end{itemize}
-  \end{itemize}
-}
-
-\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
-  \begin{center}
-  \scalebox{0.7}{
-  \begin{tikzpicture}
-    \draw[fill=yellow!50] (8.9,-2.5) rectangle (12,2.5);
-    \node[grayn] (a) {HTTP Request.};
-    \node[rn,above right=0.5cm and 0.5cm of a] (b) {Date Range.};
-    \node[on,below right=0.5cm and 0.5cm of a] (c) {Query.};
-    \node[greenn,below right=0.5cm and 0.5cm of b] (d) {Query Processor.};
-    \node[bn,above right=0.5cm and 0.5cm of d] (e)
-      {RDD$_{\rm Day~1}^{\rm Query.cols}$};
-    \node[bn,below right=0.5cm and 0.5cm of d] (f)
-      {RDD$_{\rm Day~N}^{\rm Query.cols}$};
-    \node[right=1.7cm of d] (g) {{\LARGE $\vdots$}};
-    \node[yn,right=of g] (h) {Query.run};
-    \draw[to] (a) -- (b); \draw[to] (a) -- (c); \draw[to] (b) -- (d);
-    \draw[to] (c) -- (d); \draw[to] (d) -- (e); \draw[to] (d) -- (f);
-    \draw[to] (e) -- (h); \draw[to] (f) -- (h);
-  \end{tikzpicture}
-  }
-  \end{center}
-}
-
-\subsection{Partitioning.}
-\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
-  \begin{itemize}
-    \item<+-> Spark provides an option to some operations to specify how tasks
-      are partitioned across nodes.
-    \item<+-> Partitioning when loading data is a common option, but is
-      currently undocumented for Spark and Parquet.
-    \item<+-> However, other operations such as distinct, reducebyKey,
-      and groupByKey provide an optional argument to specify
-      the minimum number of resulting partitions.
-  \end{itemize}
-}
-
-\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
-  \begin{itemize}
-    \item<+-> Counting the number of records in a Spark intermediate form is
-      expensive, and automatically knowing the optimal number of partitions
-      for operations depends highly on the data and operations.
-    \item<+->  Spindle attempts to put a target number of records in each partition
-      by estimating the total number of records to be processed
-      from Parquet's metadata.
-    \item<+-> However, web analytics data is sparse and most queries filter
-      records before doing operations that impact the partitioning.
-  \end{itemize}
-}
-\fi
 
 \subsection{Queries.}
 \newcommand{\nameMapsRow}[2]{#2 & #1 \\}
@@ -596,12 +216,7 @@
     \nameMapsRow{TopReferringDomains}{Q7}
   \end{tabular}
 \end{table}
-\medskip
-\pause
-\begin{center}
-{\bf 250 total columns}
-\end{center}
-\medskip
+\bigskip
 \pause
 \begin{table}[ht]
   \centering
@@ -635,165 +250,7 @@
 \end{table}
 }
 
-\iffalse
-\newcommand{\queryOpRow}[2]{#1 & #2 \\}
-\frame{\frametitle{\insertsection}
-  \framesubtitle{\insertsubsection~Demo at \url{http://adobe-research.github.io/spindle}}
-  \begin{itemize}
-    \item<+-> Table below shows high-level Spark operations.
-    \item<+-> Italicized operations indicate operations where partitioning is
-      specified.
-  \end{itemize}
-  \bigskip
-  \begin{table}[hb]
-    \centering
-    \tiny
-    \begin{tabular}{@{}l@{\hskip 1mm}l@{}}
-      Query & Operations \\ \hline
-      \queryOpRow{Q0}{map$\rightarrow$count}
-      \queryOpRow{Q1}{collect$\rightarrow$reduce}
-      \queryOpRow{Q2}{collect$\rightarrow${\it distinct}$\rightarrow$collect$\rightarrow${\it reduceByKey}$\rightarrow$top$\rightarrow$collect$\rightarrow$reduce}
-      \queryOpRow{Q3}{collect$\rightarrow${\it distinct}$\rightarrow$collect$\rightarrow${\it reduceByKey}$\rightarrow$top$\rightarrow$collect$\rightarrow$reduce}
-      \queryOpRow{Q4}{collect$\rightarrow${\it reduceByKey}$\rightarrow$top}
-      \queryOpRow{Q5}{collect$\rightarrow${\it reduceByKey}$\rightarrow$top$\rightarrow$collect$\rightarrow$reduceByKey$\rightarrow$top}
-      \queryOpRow{Q6}{collect$\rightarrow${\it reduceByKey}$\rightarrow$top$\rightarrow$collect$\rightarrow${\it groupByKey}$\rightarrow$map$\rightarrow$reduceByKey$\rightarrow$top}
-      \queryOpRow{Q7}{collect$\rightarrow${\it distinct}$\rightarrow$collect$\rightarrow${\it reduceByKey}$\rightarrow$top}
-    \end{tabular}
-  \end{table}
-}
-\fi
-
-\iffalse
-\begin{frame}[fragile]
-  \frametitle{\insertsection}
-  \framesubtitle{\insertsubsection~Demo at \url{http://adobe-research.github.io/spindle}}
-
-  \begin{lstlisting}[language=scala]
-case class QueryConf(
-  sc: SparkContext, data: Array[RDD[SiteCatalyst]], profile: Boolean,
-  daysInRange: Seq[String], dailyRows: Seq[Long], targetPartitionSize: Long
-)|\pause|
-
-object TopPages extends Query {|\pause|
-  def colsNeeded = Seq("post_pagename")|\pause|
-  def run(c: QueryConf) = {|\pause|
-    val allData = c.sc.union(c.data); val numAllRows = c.dailyRows.reduce(_+_)
-    val numPartitions = (numAllRows/c.targetPartitionSize).toInt|\pause|
-    val queryResult = allData.collect{
-        case (root) if !root.post_pagename.isEmpty => (root.post_pagename, 1)
-      }|\pause|
-      .reduceByKey(_+_,numPartitions)|\pause|
-      .top(10) {
-        Ordering.by((entry: ((String, Int))) => entry._2)
-      }.toSeq|\pause|
-    if (c.profile)
-      "[" + queryResult.map("\"" + _.toString + "\"").mkString(", ") + "]"|\pause|
-    else {
-      html.TopPages("TopPages", c.daysInRange, queryResult).toString
-    }
-  }
-}
-  \end{lstlisting}
-\end{frame}
-\fi
-
-%TODO: Archival data.
-
-\subsection{Ad hoc queries.}
-\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
-  \begin{itemize}
-  \item Spark SQL processes relational queries.
-  \end{itemize}
-  \pause
-  \begin{center}
-    \begin{tikzpicture}[every node/.style={anchor=north}]
-      \node at (0,0) {\includegraphics[width=1\textwidth]{adhoc1.png}}; \pause
-      \node at (0,0) {\includegraphics[width=1\textwidth]{adhoc2.png}}; \pause
-      \node at (0,0) {\includegraphics[width=1\textwidth]{adhoc3.png}}; \pause
-      \node at (0,0) {\includegraphics[width=1\textwidth]{adhoc4.png}};
-    \end{tikzpicture}
-  \end{center}
-}
-
-\section{Empirical Results}
-\iffalse
-\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
-  \begin{itemize}
-    \item<+-> Query date range is Jan 1, 2014 to Jan 7, 2014, inclusively.
-    \item<+-> Each Spark worker has 24 cores and 20GB of memory.
-    \item<+-> The entire Parquet databases on HDFS for each day
-      totals 13.1GB.
-    %\item<+-> For partitioning, 49\% of records have empty
-     % post\_pagename values, and 50.4\% of records have empty
-     % visit\_referrer values.
-    \item<+-> Benchmarking is done with a Python script, and plots
-      are produced with pyplot.
-  \end{itemize}
-}
-
-\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
-  \begin{itemize}
-    \item<+-> Because 6 workers are being used with 20GB of memory each,
-      $\leq7$ columns into memory should never cause memory or
-      paging issues.
-  \end{itemize}
-  \bigskip
-  \begin{table}[ht]
-    \centering\tiny
-    \begin{tabular}{cc}
-      Column & Gigabytes \\ \hline
-      post\_pagename & 0.286 \\
-      post\_visid\_high & 0.436 \\
-      post\_visid\_low & 0.436 \\
-      visit\_num & 0.029 \\
-      hit\_time\_gmt & 0.230 \\
-      visit\_referrer & 1.705 \\
-      post\_purchaseid & 0.000356 \\
-      post\_product\_list & 1.890 \\
-      first\_hit\_referrer & 2.070 \\
-    \end{tabular}
-  \end{table}
-}
-\fi
-
-\iffalse
-\subsection{Ideal number of partitions.}
-\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
-  \begin{itemize}
-    \item<+-> Using 6 workers, vary the target partition sizes for each
-      query that uses partitioning.
-    \item<+-> Don't cache data and sample each target partition size 4 times.
-  \end{itemize}
-}
-
-\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
-  \begin{figure}[ht]
-    \centering
-    \includegraphics[width=0.7\textwidth]{results-2014.08.02/partitions/pdf/TopPages.pdf}
-  \end{figure}
-}
-
-\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
-  \begin{itemize}
-    \item<+-> {\bf Conclusion:} Target 1.5M records in each partition for
-      best performance on this data set.
-  \end{itemize}
-  \bigskip
-  \begin{table}[ht]
-    \centering\tiny
-    \begin{tabular}{ccc}
-      Query & Best Execution Time & Execution Time at 1.5M Target Size \\ \hline
-      Q2 & 16853.50 & 16853.50 \\
-      Q3 & 16934.25 & 16934.25 \\
-      Q4 & 3241.25 & 3241.25 \\
-      Q5 & 14862.00 & 14877.25 \\
-      Q6 & 35554.50 & 37034.00 \\
-      Q7 & 6597.25 & 6597.25 \\
-    \end{tabular}
-  \end{table}
-}
-\fi
-
+\section{Empirical Results} %TODO: Add summaries.
 \subsection{Caching.}
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
   \begin{itemize}
@@ -850,20 +307,6 @@ object TopPages extends Query {|\pause|
       \node at (0,0)(){\includegraphics[width=\textwidth]{#1}};
       \fill[white] (1.5,0.95) rectangle (10,6.8) {};
       \pause
-      \iffalse
-      \node at (0,0)(){\includegraphics[width=\textwidth]{#1}};
-      \fill[white] (2.5,0.95) rectangle (10,6.8) {};
-      \pause
-      \node at (0,0)(){\includegraphics[width=\textwidth]{#1}};
-      \fill[white] (3.5,0.95) rectangle (10,6.8) {};
-      \pause
-      \node at (0,0)(){\includegraphics[width=\textwidth]{#1}};
-      \fill[white] (7.5,0.95) rectangle (10,6.8) {};
-      \pause
-      \node at (0,0)(){\includegraphics[width=\textwidth]{#1}};
-      \fill[white] (8.5,0.95) rectangle (10,6.8) {};
-      \pause
-      \fi
       \node at (0,0)(){\includegraphics[width=\textwidth]{#1}};
     \end{tikzpicture}
   }
@@ -871,47 +314,24 @@ object TopPages extends Query {|\pause|
 \revealConcurrent{results-2014.08.02/concurrent/pdf/TopPages.pdf}
 \revealConcurrent{results-2014.08.02/concurrent/pdf/TopPagesByPreviousTopPages.pdf}
 
-\subsection{Remaining.}
-\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
-  \begin{itemize}
-  \item<+-> Scaling Spark and HDFS workers.
-  \item<+-> Intermediate data partitioning.
-  \end{itemize}
+\subsection{Scaling Spark and HDFS workers.}
+\frame{
+  \centering
+  \begin{tikzpicture}[every node/.style={anchor=south west}]
+    \node at (0,0)(){\includegraphics[width=1\textwidth]{images/scalingWorkers.pdf}};
+    \fill[white] (2,0.95) rectangle (8,6.5) {};
+    \pause
+    \node at (0,0)(){\includegraphics[width=1\textwidth]{images/scalingWorkers.pdf}};
+  \end{tikzpicture}
 }
 
-
-\iffalse
-\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
-  \begin{itemize}
-    \item<+-> {\bf Conclusion:} 6 workers don't scale well to 8 queries,
-      but utilizing more workers should increase performance.
-  \end{itemize}
-  \bigskip
-  250 total columns
-  \pause
-  \begin{table}[ht]
-    \centering\tiny
-    \begin{tabular}{cccc}
-      Query & Serial Time (ms) & 2 Concurrent Slowdown &
-        8 Concurrent Slowdown \\ \hline
-      Q0 & 2420.75 & 1.69 & 6.41 \\
-      Q1 & 2472.75 & 1.72 & 6.59 \\
-      Q2 & 17052.25 & 1.70 & 6.60 \\
-      Q3 & 16911.25 & 1.69 & 6.64 \\
-      Q4 & 3256.50 & 1.38 & 5.19 \\
-      Q5 & 15152.50 & 2.39 & 7.19 \\
-      Q6 & 37529.25 & 1.66 & 4.28 \\
-      Q7 & 6490.25 & 1.19 & 4.09 \\
-    \end{tabular}
-  \end{table}
-}
-\fi
 
 \section{Conclusions}
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
   \begin{itemize}
     %\item<+-> Spark is a good candidate for expressing web analytics queries.
-    \item<+-> {\bf Spindle} is an open-source prototype analytics processing engine.
+  \item<+-> We present {\bf Spindle}, which is an open-source prototype analytics processing
+    engine.
       \begin{itemize}
       \item<+-> Sample set of web analytics queries.
       \item<+-> REST-based interface to tune parameters.
@@ -929,7 +349,6 @@ object TopPages extends Query {|\pause|
       David Tompkins & \url{http://github.com/DavidTompkins} \\
       \end{tabular}
     }
-    %% \includegraphics[width=0.9\textwidth]{spindle-github.png}
   \end{center}
 }
 
