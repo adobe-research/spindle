@@ -35,6 +35,9 @@ from matplotlib import rc
 rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
 rc('text', usetex=True)
 
+import seaborn as sns
+sns.set(style='ticks', palette='Set2')
+
 scHost = "localhost"
 scPort = 8605
 
@@ -155,19 +158,40 @@ def printSpeedups(data, data_dir):
       i+=1
     return (y,err)
   (y,err) = getStats(data)
-  print(y)
 
   # Print stats.
   def two(s): return "{:.2f}".format(s)
   print(" & ".join([str(numWorkers) for numWorkers in sorted(y)])+r" \\ \hline")
   i = 0
+  fig = plt.figure()
+  ax = fig.add_subplot(111)
+  labels = []
   for q in queries:
+    labels.append(shortNames[i])
     row = [shortNames[i]]
+    plot_y = []; plot_err = []
     for numWorkers in sorted(y):
       row.append(two(y[numWorkers][i]/1000))
       row.append(two(err[numWorkers][i]/1000))
+      plot_y.append(y[numWorkers][i]/1000)
+      plot_err.append(err[numWorkers][i]/1000)
+    init_y = plot_y[0]
+    for j in range(len(plot_y)):
+      plot_y[j] = plot_y[j]/init_y
+      plot_err[j] = plot_err[j]/init_y
+    ax.plot(sorted(y),plot_y)
+    ax.scatter(sorted(y),plot_y,marker='o',c='k',s=[x*400 for x in plot_err])
     print(" & ".join(row) + r" \\")
     i += 1
+
+  box = ax.get_position()
+  ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+  ax.legend(labels,loc='center left',bbox_to_anchor=(1,0.5))
+  ax.set_xlabel("Number of Spark and HDFS Workers")
+  ax.set_ylabel("Normalized Execution Time")
+  plt.xticks((3,4,5,6))
+  plt.savefig(data_dir+"/scaling/scalingWorkers.pdf")
+  plt.savefig(data_dir+"/scaling/scalingWorkers.png")
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--collect-data", dest="collect", action="store_true")
