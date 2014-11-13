@@ -36,7 +36,7 @@ rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
 rc('text', usetex=True)
 
 import seaborn as sns
-sns.set_palette(sns.cubehelix_palette(n_colors=10),n_colors=10)
+sns.set_palette("husl",n_colors=10)
 
 scHost = "localhost"
 scPort = 8605
