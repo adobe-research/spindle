@@ -17,10 +17,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \documentclass{beamer}
 % Theme Matrix: http://www.hartwork.org/beamer-theme-matrix/
-\mode<presentation> { \usetheme{Malmoe}\usecolortheme{dove} }
+%% \mode<presentation> { \usetheme{Malmoe}\usecolortheme{dove} }
+\mode<presentation> { \usetheme{Goettingen}\usecolortheme{dove} }
 \setbeamertemplate{itemize items}[default]
 \usepackage[T1]{fontenc}
 \usepackage{parskip,graphics,tikz,multimedia,hyperref,ulem,multicol}
+\usepackage{array,multirow}
 \usetikzlibrary{arrows,positioning,shapes,decorations.pathmorphing,
   decorations.markings}
 \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}\setlength{\parsep}{0pt}
@@ -53,13 +55,13 @@
   morestring=[b]"""
 }
 
-\usebackgroundtemplate{
-  \tikz[overlay,remember picture]
-  \node[yshift=10mm,anchor=south east,inner sep=0pt]
-    at (current page.south east) {
-    \includegraphics[width=0.5in]{logo}
-  };
-}
+%% \usebackgroundtemplate{
+%%   \tikz[overlay,remember picture]
+%%   \node[yshift=10mm,anchor=south east,inner sep=0pt]
+%%     at (current page.south west) {
+%%     \includegraphics[width=0.5in]{logo}
+%%   };
+%% }
 
 \tikzset{
   yn/.style={draw,thick,rounded corners,fill=yellow!20,inner sep=.3cm},
@@ -83,48 +85,68 @@
     segment length=8,amplitude=2,post=lineto,post length=2pt}}
 }
 
-\expandafter\def\expandafter\insertshorttitle\expandafter{%
-  \insertshorttitle\hfill%
-  \insertframenumber\,/\,\inserttotalframenumber}
-\renewcommand*{\thefootnote}{\fnsymbol{footnote}}
+%% \expandafter\def\expandafter\insertshorttitle\expandafter{%
+%%   \insertshorttitle\hfill%
+%%   \insertframenumber\,/\,\inserttotalframenumber}
+%% \renewcommand*{\thefootnote}{\fnsymbol{footnote}}
 \beamertemplatenavigationsymbolsempty
+
+\setbeamerfont{page number in head/foot}{size=\large}
+\setbeamertemplate{footline}[frame number]
+
 
 \begin{document}
 
 \title[Spindle, CloudCom 2014]{
-  {\Large Performance study of Spindle, a web analytics\\[-2mm]
-    query engine implemented in Spark} \\[-3mm]
-  {\small CloudCom 2014}
+  {\Large Performance study of Spindle, a web analytics
+    query engine implemented in Spark}
+  }
+\subtitle{
+  CloudCom 2014
 }
 \author[Amos and Tompkins, Adobe Research]{
-  {\bf Brandon Amos$^*$} and David Tompkins, {\bf Adobe Research } \\
+  {\bf Brandon Amos$^*$} and David Tompkins \\
+  {\bf Adobe Research } \\
   {\footnotesize
-    $^*$Adobe summer intern, Ph.D. Student at
+    $^*$Adobe intern, Ph.D. Student at
     Carnegie Mellon University.} \\[4mm]
   \vspace*{-5mm}
 }
 \date{December 19, 2014}
 {\setbeamertemplate{footline}{}\setbeamertemplate{headline}{}\frame{\titlepage}}
 \addtocounter{framenumber}{-1}
+\frame{\tableofcontents}\addtocounter{framenumber}{-1}
 
 \section{Motivation}
+\frame{\tableofcontents[currentsection]}
 \frame{\frametitle{\insertsection}
   \begin{itemize}
     \item Adobe Marketing Cloud offers web analytics.
   \end{itemize}
   \pause
+  %% \begin{center}
+  %%   \begin{tikzpicture}[every node/.style={anchor=north}]
+  %%     \node at (0,0) {\includegraphics[width=1\textwidth]{tpbb1.png}};
+  %%     \pause
+  %%     \node at (0,0) {\includegraphics[width=1\textwidth]{tpbb2.png}};
+  %%   \end{tikzpicture}
+  %% \end{center}
   \begin{center}
-    \begin{tikzpicture}[every node/.style={anchor=north}]
-      \node at (0,0) {\includegraphics[width=1\textwidth]{tpbb1.png}};
-      \pause
-      \node at (0,0) {\includegraphics[width=1\textwidth]{tpbb2.png}};
+    \begin{tikzpicture}[every node/.style={anchor=south west}]
+      \foreach \yoffset in {7,6,5,4,3,2} {
+        \node at (0,0) {\includegraphics[width=1\textwidth]{funnel.png}};
+        \fill[white] (0,0) rectangle (10,\yoffset) {};
+        \pause
+      }
+      \node at (0,0) {\includegraphics[width=1\textwidth]{funnel.png}};
     \end{tikzpicture}
   \end{center}
 }
 
 \frame{\frametitle{\insertsection}
   \begin{itemize}
-    \item Adobe Marketing Cloud offers web analytics.
+    \item<+-> Adobe Marketing Cloud offers web analytics for interactive
+      data exploration.
     \item<+-> Terabytes of data, thousands of servers.
     \item<+-> Trending general-purpose distributed data processing engines.
       \begin{itemize}
@@ -134,16 +156,22 @@
         \item<+-> In-memory caching.
         \end{itemize}
       \item<+-> Cloudera Impala
+        \begin{itemize}
+        \item Analytic Database for Apache Hadoop.
+        \end{itemize}
       \item<+-> Google Dremel
+        \begin{itemize}
+        \item Analytics of web-scale datasets.
+        \end{itemize}
       \end{itemize}
-    \item<+-> We present {\bf Spindle}, which is an early investigation of the
-      feasibility of Apache Spark for web analytics
-    \item<+-> {\bf Problem:} How well does Spindle scale for
-      web analytics?
+    \item<+-> We present {\bf Spindle}, which is an early investigation
+      of the feasibility of Apache Spark for web analytics
+    \item<+-> Goal: Low-latency query execution time.
   \end{itemize}
 }
 
 \section{Spindle Architecture}
+\frame{\tableofcontents[currentsection]}
 
 \subsection{Overview.}
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
@@ -183,12 +211,16 @@
   \end{center}
 }
 
+\subsection{Features.}
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
   \begin{itemize}
-  \item<+-> Operates on archival data with 250 columns.
-  \item<+-> Data is sparse and queries use <10 columns at a time.
+  \item<+-> Data format challenges:
+    \begin{itemize}
+    \item<+-> Operates on archival data with 250 columns.
+    \item<+-> Data is sparse and queries use <10 columns at a time.
+    \end{itemize}
   \item<+-> Use columnar data format on distributed filesystem.
-  \item<+-> Parameters when processing data.
+  \item<+-> Spindle makes tuning parameters easy.
     \begin{itemize}
     \item<+-> Intermediate data partitioning
     \item<+-> Caching
@@ -200,7 +232,12 @@
 \subsection{Queries.}
 \newcommand{\nameMapsRow}[2]{#2 & #1 \\}
 \newcommand{\mt}{\ensuremath{\times}}
-\frame{
+\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
+  \begin{itemize}
+  \item Experimental setup: Representative set of analytics queries.
+  \end{itemize}
+  \pause
+  \bigskip
 \begin{table}[hb]
   \centering
   \scriptsize
@@ -216,41 +253,48 @@
     \nameMapsRow{TopReferringDomains}{Q7}
   \end{tabular}
 \end{table}
-\bigskip
-\pause
+}
+
+\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
+  \begin{itemize}
+  \item Queries use a small columnar subset.
+  \end{itemize}
+  \pause\bigskip
 \begin{table}[ht]
   \centering
   \scriptsize
-  \begin{tabular}{ccccccccc}
-  &
+  \begin{tabular}{cccccccccc}
+  & &
     Q0 &  Q1  &  Q2  &  Q3  &  Q4  &  Q5  &  Q6  &  Q7  \\ \hline
-  post\_pagename &
+  \parbox[t]{2mm}{\multirow{11}{*}{\rotatebox[origin=c]{90}{Columns}}}
+  & post\_pagename &
    \mt &      &      &      &  \mt &  \mt &  \mt &      \\
-  user\_agent &
+  & user\_agent &
        &      &      &      &      &  \mt &      &      \\
-  visit\_referrer &
+  & visit\_referrer &
        &      &  \mt &  \mt &      &      &      &      \\
-  post\_visid\_high &
+  & post\_visid\_high &
        &      &  \mt &  \mt &      &      &  \mt &  \mt \\
-  post\_visid\_low &
+  & post\_visid\_low &
        &      &  \mt &  \mt &      &      &  \mt &  \mt \\
-  visit\_num &
+  & visit\_num &
        &      &  \mt &  \mt &      &      &  \mt &  \mt \\
-  visit\_referrer &
+  & visit\_referrer &
        &      &      &      &      &      &      &  \mt \\
-  hit\_time\_gmt &
+  & hit\_time\_gmt &
        &      &      &      &      &      &  \mt &      \\
-  post\_purchaseid &
+  & post\_purchaseid &
        &  \mt &  \mt &  \mt &      &      &      &      \\
-  post\_product\_list &
+  & post\_product\_list &
        &  \mt &  \mt &  \mt &      &      &      &      \\
-  first\_hit\_referrer &
+  & first\_hit\_referrer &
        &      &      &  \mt &      &      &      &      \\
   \end{tabular}
 \end{table}
 }
 
-\section{Empirical Results} %TODO: Add summaries.
+\section{Empirical Results}
+\frame{\tableofcontents[currentsection]}
 \subsection{Caching.}
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
   \begin{itemize}
@@ -264,20 +308,43 @@
   \centering
   \begin{tikzpicture}[every node/.style={anchor=south west}]
     \node at (0,0)(){\includegraphics[width=1\textwidth]{results-2014.08.02/caching/caching.pdf}};
-    \fill[white] (1.4,0.95) rectangle (11,6) {};
+    \fill[white] (1.4,0.95) rectangle (10,6) {};
     \fill[white] (6,6) rectangle (9,7) {};
     \pause
     \node at (0,0)(){\includegraphics[width=1\textwidth]{results-2014.08.02/caching/caching.pdf}};
-    \fill[white] (3.5,0.95) rectangle (5.5,6) {};
-    \fill[white] (6.5,0.95) rectangle (8.6,6) {};
-    \fill[white] (6,6) rectangle (9,7) {};
     \pause
-    \node at (0,0)(){\includegraphics[width=1\textwidth]{results-2014.08.02/caching/caching.pdf}};
-    \fill[white] (7.5,0.95) rectangle (8.6,7) {};
-    \pause
-    \node at (0,0)(){\includegraphics[width=1\textwidth]{results-2014.08.02/caching/caching.pdf}};
   \end{tikzpicture}
+  \begin{itemize}
+  \item<+-> Caching helps, but what else can be done to
+  lower query execution times?
+  \end{itemize}
 }
+
+\subsection{Data partitioning.}
+\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
+  \begin{itemize}
+  \item<+-> Partitions are groups of data executed in a batch.
+  \item<+-> Partitions can be executed concurrently.
+  \item<+-> Not clear how to partition the intermediate data.
+    \begin{itemize}
+    \item<+-> Too small: Partition management overhead.
+    \item<+-> Too large: Data is processed in serial.
+    \end{itemize}
+  \end{itemize}
+}
+\frame{
+  \centering
+  \begin{tikzpicture}[every node/.style={anchor=south west}]
+    \node at (0,0)(){\includegraphics[width=1\textwidth]{results-2014.08.02/partitions/pdf/TopPages.pdf}};
+    \fill[white] (1.4,0.95) rectangle (10,7) {};
+    \pause
+    \node at (0,0)(){\includegraphics[width=1\textwidth]{results-2014.08.02/partitions/pdf/TopPages.pdf}};
+  \end{tikzpicture}
+  \begin{itemize}
+  \item<+-> Targeting 1.5M items in each partition is reasonable.
+  \end{itemize}
+}
+
 
 \subsection{Benchmarking concurrent queries.}
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
@@ -309,9 +376,13 @@
       \pause
       \node at (0,0)(){\includegraphics[width=\textwidth]{#1}};
     \end{tikzpicture}
+    \begin{itemize}
+    \item<+-> Performance better than serializing concurrent
+      requests, but can be improved.
+    \end{itemize}
   }
 }
-\revealConcurrent{results-2014.08.02/concurrent/pdf/TopPages.pdf}
+%% \revealConcurrent{results-2014.08.02/concurrent/pdf/TopPages.pdf}
 \revealConcurrent{results-2014.08.02/concurrent/pdf/TopPagesByPreviousTopPages.pdf}
 
 \subsection{Scaling Spark and HDFS workers.}
@@ -319,24 +390,46 @@
   \centering
   \begin{tikzpicture}[every node/.style={anchor=south west}]
     \node at (0,0)(){\includegraphics[width=1\textwidth]{images/scalingWorkers.pdf}};
-    \fill[white] (2,0.95) rectangle (8,6.5) {};
+    \fill[white] (2,0.95) rectangle (7.3,6) {};
     \pause
     \node at (0,0)(){\includegraphics[width=1\textwidth]{images/scalingWorkers.pdf}};
   \end{tikzpicture}
+  \begin{itemize}
+  \item<+-> Further profiling is needed to improve performance as
+    increasing the number of workers.
+  \end{itemize}
 }
 
+\section{Future Work}
+\frame{\tableofcontents[currentsection]}
+\frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
+  \begin{itemize}
+  \item<+-> Lowering query execution time.
+    \begin{itemize}
+    \item<+-> Goal: Sub-second.
+    \end{itemize}
+  \item<+-> Automatically tuning parameter exploration space for
+    a given workload.
+    \begin{itemize}
+    \item<+-> Online/Dynamically
+    \item<+-> Offline
+    \end{itemize}
+  \item<+-> Results caching for exact same queries.
+  \item<+-> Data preprocessing to remove redundant computations.
+  \end{itemize}
+}
 
 \section{Conclusions}
+\frame{\tableofcontents[currentsection]}
 \frame{\frametitle{\insertsection}\framesubtitle{\insertsubsection}
   \begin{itemize}
     %\item<+-> Spark is a good candidate for expressing web analytics queries.
-  \item<+-> We present {\bf Spindle}, which is an open-source prototype analytics processing
-    engine.
+  \item<+-> We present {\bf Spindle}.
       \begin{itemize}
+      \item<+-> {\bf Open-source} prototype analytics processing engine.
       \item<+-> Sample set of web analytics queries.
-      \item<+-> REST-based interface to tune parameters.
+      \item<+-> Interface for parameter tuning.
       \end{itemize}
-    \item<+-> Spindle's future work is on preprocessing.
   \end{itemize}
   \pause
   \vspace{4mm}
