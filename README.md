@@ -1,6 +1,11 @@
 # Spindle
 
-[CloudCom 2014 Presentation](http://adobe-research.github.io/spindle/pres)
+**Spindle is [Brandon Amos'](http://github.com/bamos)
+2014 summer internship project with Adobe Research
+and is not under active development.**
+
+---
+
 ![](https://github.com/adobe-research/spindle/raw/master/images/architecture.png)
 
 Analytics platforms such as [Adobe Analytics][adobe-analytics]
